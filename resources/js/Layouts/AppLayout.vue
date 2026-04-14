@@ -79,7 +79,7 @@ onMounted(() => {
                 <div class="flex justify-between h-14">
                     <div class="flex items-center">
                         <Link href="/" class="flex items-center">
-                            <img src="/img/tunely_logo2.png" alt="Tunely" class="h-10 w-auto">
+                            <img src="/img/tunely_logo2.png" alt="Tunely" class="h-28 w-auto">
                         </Link>
                     </div>
 
@@ -145,7 +145,7 @@ onMounted(() => {
             <div class="max-w-7xl mx-auto px-4">
                 <div class="grid md:grid-cols-3 gap-8 text-sm">
                     <div>
-                        <img src="/img/tunely_logo2.png" alt="Tunely" class="h-8 mb-4">
+                        <img src="/img/tunely_logo.png" alt="Tunely" class="h-16 mb-4">
                         <p>Tu tienda de instrumentos musicales.</p>
                     </div>
                     <div>

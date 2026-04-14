@@ -9,7 +9,7 @@ import { Link } from '@inertiajs/vue3';
                 <div class="flex justify-between h-16">
                     <div class="flex items-center">
                         <Link href="/" class="flex items-center">
-                            <img src="/img/tunely_logo2.png" alt="Tunely" class="h-10 w-auto">
+                            <img src="/img/tunely_logo2.png" alt="Tunely" class="h-28 w-auto">
                         </Link>
                     </div>
                     <div class="flex items-center space-x-4">

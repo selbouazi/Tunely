@@ -4,7 +4,10 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="Tunely - Tu tienda de instrumentos musicales">
-<meta name="theme-color" content="#FEFDDF">
+        <meta name="theme-color" content="#FEFDDF">
+        
+        <link rel="icon" type="image/png" href="/img/favicoin.png">
+        <link rel="shortcut icon" type="image/png" href="/img/favicoin.png">
 
         <title inertia>{{ config('app.name', 'Tunely') }}</title>
 
