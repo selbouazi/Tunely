@@ -4,10 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="description" content="Tunely - Tu tienda de instrumentos musicales">
-        <meta name="theme-color" content="#000000">
-
-        <link rel="icon" type="image/png" href="/img/tunely_logo.png">
-        <link rel="apple-touch-icon" href="/img/tunely_logo.png">
+<meta name="theme-color" content="#FEFDDF">
 
         <title inertia>{{ config('app.name', 'Tunely') }}</title>
 
@@ -20,7 +17,7 @@
         @vite(['resources/js/app.js', "resources/js/Pages/{$page['component']}.vue"])
         @inertiaHead
     </head>
-    <body class="font-sans antialiased bg-gray-950">
+    <body class="font-sans antialiased bg-[#FEFDDF]">
         @inertia
     </body>
 </html>

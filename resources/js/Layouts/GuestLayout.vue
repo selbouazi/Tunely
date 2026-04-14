@@ -3,8 +3,8 @@ import { Link } from '@inertiajs/vue3';
 </script>
 
 <template>
-    <div class="min-h-screen flex flex-col bg-gray-950 text-white">
-        <nav class="bg-gray-900 border-b border-gray-800">
+    <div class="min-h-screen flex flex-col bg-[#FEFDDF] text-[#1a1a1a]">
+        <nav class="bg-[#73A5CA]">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex justify-between h-16">
                     <div class="flex items-center">
@@ -13,7 +13,7 @@ import { Link } from '@inertiajs/vue3';
                         </Link>
                     </div>
                     <div class="flex items-center space-x-4">
-                        <Link href="/" class="text-gray-400 hover:text-white transition text-sm">
+                        <Link href="/" class="text-[#1a1a1a] hover:text-[#E87F24] transition text-sm">
                             Volver a la tienda
                         </Link>
                     </div>
@@ -23,7 +23,7 @@ import { Link } from '@inertiajs/vue3';
 
         <div class="flex-grow flex items-center justify-center px-4 sm:px-6 lg:px-8 py-12">
             <div class="w-full max-w-3xl">
-                <div class="bg-gray-900 border border-gray-800 rounded-2xl p-8">
+                <div class="bg-white border border-[#73A5CA] rounded-2xl p-8 shadow-lg">
                     <slot />
                 </div>
             </div>

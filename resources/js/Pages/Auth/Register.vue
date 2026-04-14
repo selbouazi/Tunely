@@ -86,7 +86,7 @@ const submit = () => {
                         id="nombre"
                         type="text"
                         class="mt-1 block w-full transition-colors"
-                        :class="focusedField === 'nombre' ? 'ring-2 ring-green-500' : ''"
+                        :class="focusedField === 'nombre' ? 'ring-2 ring-[#E87F24]' : ''"
                         v-model="form.nombre"
                         required
                         autofocus
@@ -101,8 +101,8 @@ const submit = () => {
                     <TextInput
                         id="apellido1"
                         type="text"
-                        class="mt-1 block w-full"
-                        :class="focusedField === 'apellido1' ? 'ring-2 ring-green-500' : ''"
+                        class="mt-1 block w-full bg-[#FEFDDF]"
+                        :class="focusedField === 'apellido1' ? 'ring-2 ring-[#E87F24]' : ''"
                         v-model="form.apellido1"
                         @focus="focusedField = 'apellido1'"
                         @blur="focusedField = null"
@@ -114,8 +114,8 @@ const submit = () => {
                     <TextInput
                         id="apellido2"
                         type="text"
-                        class="mt-1 block w-full"
-                        :class="focusedField === 'apellido2' ? 'ring-2 ring-green-500' : ''"
+                        class="mt-1 block w-full bg-[#FEFDDF]"
+                        :class="focusedField === 'apellido2' ? 'ring-2 ring-[#E87F24]' : ''"
                         v-model="form.apellido2"
                         @focus="focusedField = 'apellido2'"
                         @blur="focusedField = null"
@@ -127,8 +127,8 @@ const submit = () => {
                     <TextInput
                         id="fecha_nacimiento"
                         type="date"
-                        class="mt-1 block w-full"
-                        :class="focusedField === 'fecha_nacimiento' ? 'ring-2 ring-green-500' : ''"
+                        class="mt-1 block w-full bg-[#FEFDDF]"
+                        :class="focusedField === 'fecha_nacimiento' ? 'ring-2 ring-[#E87F24]' : ''"
                         v-model="form.fecha_nacimiento"
                         required
                         @focus="focusedField = 'fecha_nacimiento'"
@@ -142,8 +142,8 @@ const submit = () => {
                     <TextInput
                         id="telefono"
                         type="tel"
-                        class="mt-1 block w-full"
-                        :class="focusedField === 'telefono' ? 'ring-2 ring-green-500' : ''"
+                        class="mt-1 block w-full bg-[#FEFDDF]"
+                        :class="focusedField === 'telefono' ? 'ring-2 ring-[#E87F24]' : ''"
                         v-model="form.telefono"
                         placeholder="+34 612 345 678"
                         required
@@ -154,16 +154,16 @@ const submit = () => {
                 </div>
             </div>
 
-            <div class="border-t border-gray-700 pt-4 mt-4">
-                <h3 class="text-white font-medium mb-3">Dirección de envío</h3>
+            <div class="border-t border-[#73A5CA] pt-4 mt-4">
+                <h3 class="text-[#1a1a1a] font-medium mb-3">Dirección de envío</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="md:col-span-2">
                         <InputLabel for="direccion" value="Dirección *" />
                         <TextInput
                             id="direccion"
                             type="text"
-                            class="mt-1 block w-full"
-                            :class="focusedField === 'direccion' ? 'ring-2 ring-green-500' : ''"
+                            class="mt-1 block w-full bg-[#FEFDDF]"
+                            :class="focusedField === 'direccion' ? 'ring-2 ring-[#E87F24]' : ''"
                             v-model="form.direccion"
                             placeholder="Calle, número, piso..."
                             required
@@ -178,8 +178,8 @@ const submit = () => {
                         <TextInput
                             id="ciudad"
                             type="text"
-                            class="mt-1 block w-full"
-                            :class="focusedField === 'ciudad' ? 'ring-2 ring-green-500' : ''"
+                            class="mt-1 block w-full bg-[#FEFDDF]"
+                            :class="focusedField === 'ciudad' ? 'ring-2 ring-[#E87F24]' : ''"
                             v-model="form.ciudad"
                             required
                             @focus="focusedField = 'ciudad'"
@@ -193,8 +193,8 @@ const submit = () => {
                         <TextInput
                             id="provincia"
                             type="text"
-                            class="mt-1 block w-full"
-                            :class="focusedField === 'provincia' ? 'ring-2 ring-green-500' : ''"
+                            class="mt-1 block w-full bg-[#FEFDDF]"
+                            :class="focusedField === 'provincia' ? 'ring-2 ring-[#E87F24]' : ''"
                             v-model="form.provincia"
                             required
                             @focus="focusedField = 'provincia'"
@@ -208,8 +208,8 @@ const submit = () => {
                         <TextInput
                             id="codigo_postal"
                             type="text"
-                            class="mt-1 block w-full"
-                            :class="focusedField === 'codigo_postal' ? 'ring-2 ring-green-500' : ''"
+                            class="mt-1 block w-full bg-[#FEFDDF]"
+                            :class="focusedField === 'codigo_postal' ? 'ring-2 ring-[#E87F24]' : ''"
                             v-model="form.codigo_postal"
                             maxlength="5"
                             placeholder="12345"
@@ -222,7 +222,7 @@ const submit = () => {
                 </div>
             </div>
 
-            <div class="border-t border-gray-700 pt-4 mt-4">
+            <div class="border-t border-[#73A5CA] pt-4 mt-4">
                 <div class="flex items-center mb-3">
                     <input
                         id="mismo_direccion_facturacion"
@@ -230,7 +230,7 @@ const submit = () => {
                         v-model="form.mismo_direccion_facturacion"
                         class="mr-2"
                     />
-                    <label for="mismo_direccion_facturacion" class="text-white text-sm">
+                    <label for="mismo_direccion_facturacion" class="text-[#1a1a1a] text-sm">
                         La dirección de facturación es la misma que la de envío
                     </label>
                 </div>
@@ -241,7 +241,7 @@ const submit = () => {
                         <TextInput
                             id="direccion_facturacion"
                             type="text"
-                            class="mt-1 block w-full"
+                            class="mt-1 block w-full bg-[#FEFDDF]"
                             v-model="form.direccion_facturacion"
                         />
                     </div>
@@ -251,7 +251,7 @@ const submit = () => {
                         <TextInput
                             id="ciudad_facturacion"
                             type="text"
-                            class="mt-1 block w-full"
+                            class="mt-1 block w-full bg-[#FEFDDF]"
                             v-model="form.ciudad_facturacion"
                         />
                     </div>
@@ -261,7 +261,7 @@ const submit = () => {
                         <TextInput
                             id="provincia_facturacion"
                             type="text"
-                            class="mt-1 block w-full"
+                            class="mt-1 block w-full bg-[#FEFDDF]"
                             v-model="form.provincia_facturacion"
                         />
                     </div>
@@ -271,7 +271,7 @@ const submit = () => {
                         <TextInput
                             id="codigo_postal_facturacion"
                             type="text"
-                            class="mt-1 block w-full"
+                            class="mt-1 block w-full bg-[#FEFDDF]"
                             v-model="form.codigo_postal_facturacion"
                             maxlength="5"
                         />
@@ -279,50 +279,50 @@ const submit = () => {
                 </div>
             </div>
 
-            <div class="border-t border-gray-700 pt-4 mt-4">
-                <h3 class="text-white font-medium mb-3">Preferencias (opcional)</h3>
+            <div class="border-t border-[#73A5CA] pt-4 mt-4">
+                <h3 class="text-[#1a1a1a] font-medium mb-3">Preferencias (opcional)</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <InputLabel for="preferencias_combustible" value="Preferencia de combustible" />
+                        <InputLabel for="preferencias_combustible" value="Preferencia de instrumento" />
                         <select
                             id="preferencias_combustible"
-                            class="mt-1 block w-full bg-gray-900 border border-gray-700 text-white px-4 py-2 rounded"
+                            class="mt-1 block w-full bg-[#FEFDDF] border border-[#73A5CA] text-[#1a1a1a] px-4 py-2 rounded"
                             v-model="form.preferencias_combustible"
                         >
                             <option value="">Selecciona...</option>
-                            <option value="gasolina">Gasolina</option>
-                            <option value="diesel">Diésel</option>
-                            <option value="electrico">Eléctrico</option>
-                            <option value="hibrido">Híbrido</option>
+                            <option value="guitarra">Guitarra</option>
+                            <option value="bajo">Bajo</option>
+                            <option value="bateria">Batería</option>
+                            <option value="teclado">Teclado</option>
                             <option value="indiferente">Indiferente</option>
                         </select>
                     </div>
 
                     <div>
-                        <InputLabel for="tipo_conduccion" value="Tipo de conducción" />
+                        <InputLabel for="tipo_conduccion" value="Nivel de experiencia" />
                         <select
                             id="tipo_conduccion"
-                            class="mt-1 block w-full bg-gray-900 border border-gray-700 text-white px-4 py-2 rounded"
+                            class="mt-1 block w-full bg-[#FEFDDF] border border-[#73A5CA] text-[#1a1a1a] px-4 py-2 rounded"
                             v-model="form.tipo_conduccion"
                         >
                             <option value="">Selecciona...</option>
-                            <option value="urbana">Urbana</option>
-                            <option value="carretera">Carretera</option>
-                            <option value="mixta">Mixta</option>
-                            <option value="deportiva">Deportiva</option>
+                            <option value="urbana">Principiante</option>
+                            <option value="carretera">Intermedio</option>
+                            <option value="mixta">Avanzado</option>
+                            <option value="deportiva">Profesional</option>
                         </select>
                     </div>
                 </div>
             </div>
 
-            <div class="border-t border-gray-700 pt-4 mt-4">
+            <div class="border-t border-[#73A5CA] pt-4 mt-4">
                 <div>
                     <InputLabel for="email" value="Email *" />
                     <TextInput
                         id="email"
                         type="email"
-                        class="mt-1 block w-full"
-                        :class="focusedField === 'email' ? 'ring-2 ring-green-500' : ''"
+                        class="mt-1 block w-full bg-[#FEFDDF]"
+                        :class="focusedField === 'email' ? 'ring-2 ring-[#E87F24]' : ''"
                         v-model="form.email"
                         required
                         autocomplete="username"
@@ -337,8 +337,8 @@ const submit = () => {
                     <TextInput
                         id="password"
                         type="password"
-                        class="mt-1 block w-full"
-                        :class="focusedField === 'password' ? 'ring-2 ring-green-500' : ''"
+                        class="mt-1 block w-full bg-[#FEFDDF]"
+                        :class="focusedField === 'password' ? 'ring-2 ring-[#E87F24]' : ''"
                         v-model="form.password"
                         required
                         autocomplete="new-password"
@@ -346,9 +346,9 @@ const submit = () => {
                         @blur="focusedField = null"
                     />
                     <div v-if="form.password" class="mt-2">
-                        <label class="text-xs text-gray-400">Fortaleza:</label>
+                        <label class="text-xs text-[#1a1a1a]/70">Fortaleza:</label>
                         <meter :value="passwordStrength" min="0" max="5" class="w-full h-2 mt-1"></meter>
-                        <span class="text-xs" :class="strengthLabel.color.includes('red') ? 'text-red-400' : strengthLabel.color.includes('yellow') ? 'text-yellow-400' : 'text-green-400'">
+                        <span class="text-xs" :class="strengthLabel.color.includes('red') ? 'text-red-500' : strengthLabel.color.includes('yellow') ? 'text-yellow-500' : 'text-green-500'">
                             {{ strengthLabel.label }}
                         </span>
                     </div>
@@ -360,8 +360,8 @@ const submit = () => {
                     <TextInput
                         id="password_confirmation"
                         type="password"
-                        class="mt-1 block w-full"
-                        :class="focusedField === 'password_confirmation' ? 'ring-2 ring-green-500' : ''"
+                        class="mt-1 block w-full bg-[#FEFDDF]"
+                        :class="focusedField === 'password_confirmation' ? 'ring-2 ring-[#E87F24]' : ''"
                         v-model="form.password_confirmation"
                         required
                         autocomplete="new-password"
@@ -375,7 +375,7 @@ const submit = () => {
             <div class="mt-6 flex items-center justify-between">
                 <Link
                     :href="route('login')"
-                    class="rounded-md text-sm text-gray-400 underline hover:text-gray-200"
+                    class="rounded-md text-sm text-[#E87F24] underline hover:text-[#FFC81E]"
                 >
                     ¿Ya tienes cuenta?
                 </Link>

@@ -25,29 +25,29 @@ const addToCart = (instrument) => {
 
 <template>
     <AppLayout>
-        <Head title="Catálogo - Soundly" />
+        <Head title="Catálogo - Tunely" />
 
-        <section class="bg-black py-12 px-4">
+        <section class="bg-[#FEFDDF] py-12 px-4">
             <div class="max-w-7xl mx-auto">
-                <h1 class="text-3xl font-bold mb-4">Catálogo</h1>
-                <p class="text-gray-400">Encuentra el instrumento perfecto</p>
+                <h1 class="text-3xl font-bold mb-4 text-[#1a1a1a]">Catálogo</h1>
+                <p class="text-[#1a1a1a]/70">Encuentra el instrumento perfecto</p>
             </div>
         </section>
 
-        <section class="bg-gray-900 py-4 px-4">
+        <section class="bg-white py-4 px-4">
             <div class="max-w-7xl mx-auto flex flex-wrap gap-2">
                 <button 
                     v-for="cat in categories" 
                     :key="cat.id" 
-                    class="px-3 py-1 text-sm border border-[#6AECE1] text-[#6AECE1] hover:bg-[#6AECE1] hover:text-black transition"
-                    :class="{ 'bg-[#6AECE1] text-black': selectedCategory === cat.nombre }"
+                    class="px-3 py-1 text-sm border border-[#E87F24] text-[#E87F24] hover:bg-[#E87F24] hover:text-white transition"
+                    :class="{ 'bg-[#E87F24] text-white': selectedCategory === cat.nombre }"
                     @click="selectedCategory = cat.nombre"
                 >
                     {{ cat.nombre }}
                 </button>
                 <button 
-                    class="px-3 py-1 text-sm border border-[#6AECE1] text-[#6AECE1] hover:bg-[#6AECE1] hover:text-black transition"
-                    :class="{ 'bg-[#6AECE1] text-black': selectedCategory === 'Todos' }"
+                    class="px-3 py-1 text-sm border border-[#E87F24] text-[#E87F24] hover:bg-[#E87F24] hover:text-white transition"
+                    :class="{ 'bg-[#E87F24] text-white': selectedCategory === 'Todos' }"
                     @click="selectedCategory = 'Todos'"
                 >
                     Todos
@@ -55,22 +55,22 @@ const addToCart = (instrument) => {
             </div>
         </section>
 
-        <section class="bg-black py-12 px-4">
+        <section class="bg-[#FEFDDF] py-12 px-4">
             <div class="max-w-7xl mx-auto">
                 <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <div v-for="v in filteredInstruments(instruments)" :key="v.id" class="bg-gray-900 p-4">
+                    <div v-for="v in filteredInstruments(instruments)" :key="v.id" class="bg-white p-4 rounded shadow">
                         <img :src="v.imagen || defaultImage" :alt="v.marca + ' ' + v.modelo" class="w-full rounded mb-4">
-                        <p class="text-gray-400 text-sm">{{ v.marca }} {{ v.modelo }}</p>
-                        <p class="text-lg font-bold">{{ v.tipo === 'usado' ? 'Usado' : 'Nuevo' }}</p>
-                        <p class="text-gray-500 text-sm">Stock: {{ v.stock }}</p>
+                        <p class="text-[#1a1a1a]/70 text-sm">{{ v.marca }} {{ v.modelo }}</p>
+                        <p class="text-lg font-bold text-[#1a1a1a]">{{ v.tipo === 'usado' ? 'Usado' : 'Nuevo' }}</p>
+                        <p class="text-[#1a1a1a]/50 text-sm">Stock: {{ v.stock }}</p>
                         <div class="flex justify-between items-center mt-4">
                             <div>
-                                <span class="text-xl font-bold text-[#6AECE1]">{{ v.precio }}€</span>
-                                <span v-if="v.precio_original" class="text-gray-500 text-sm ml-2 line-through">{{ v.precio_original }}€</span>
+                                <span class="text-xl font-bold text-[#E87F24]">{{ v.precio }}€</span>
+                                <span v-if="v.precio_original" class="text-[#1a1a1a]/50 text-sm ml-2 line-through">{{ v.precio_original }}€</span>
                             </div>
                             <div class="flex gap-2">
-                                <Link :href="'/catalogo/' + v.id" class="bg-[#6AECE1] text-black px-4 py-1 text-sm">Ver</Link>
-                                <button @click="addToCart(v)" class="bg-[#26CCC2] text-white px-4 py-1 text-sm hover:bg-[#6AECE1]">Añadir</button>
+                                <Link :href="'/catalogo/' + v.id" class="bg-[#FFC81E] text-[#1a1a1a] px-4 py-1 text-sm hover:bg-[#E87F24]">Ver</Link>
+                                <button @click="addToCart(v)" class="bg-[#E87F24] text-white px-4 py-1 text-sm hover:bg-[#FFC81E]">Añadir</button>
                             </div>
                         </div>
                     </div>
