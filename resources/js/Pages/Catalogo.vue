@@ -67,7 +67,6 @@ const addToCart = (instrument) => {
                             <div>
                                 <span class="text-xl font-bold text-[#E87F24]">{{ v.precio }}€</span>
                                 <span v-if="v.precio_original" class="text-[#1a1a1a]/50 text-sm ml-2 line-through">{{ v.precio_original }}€</span>
-                                <span class="block text-xs text-[#1a1a1a]/50">IVA incluido</span>
                             </div>
                             <div class="flex gap-2">
                                 <Link :href="'/catalogo/' + v.id" class="bg-[#FFC81E] text-[#1a1a1a] px-4 py-1 text-sm hover:bg-[#E87F24]">Ver</Link>

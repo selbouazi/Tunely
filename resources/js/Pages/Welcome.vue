@@ -46,7 +46,6 @@ const addToCart = (instrument) => {
                             <div>
                                 <p class="font-bold text-xl text-[#E87F24]">{{ v.precio }}€</p>
                                 <p v-if="v.precio_original" class="text-[#1a1a1a]/50 text-sm line-through">{{ v.precio_original }}€</p>
-                                <p class="text-xs text-[#1a1a1a]/50">IVA incluido</p>
                             </div>
                             <button @click="addToCart(v)" class="bg-[#FFC81E] text-[#1a1a1a] px-3 py-1 text-sm hover:bg-[#E87F24]">Añadir</button>
                         </div>
