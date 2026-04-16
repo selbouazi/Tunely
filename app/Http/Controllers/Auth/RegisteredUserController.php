@@ -25,7 +25,11 @@ class RegisteredUserController extends Controller
             'nombre' => 'required|string|regex:/^[\pL\s]+$/u|max:255',
             'apellido1' => 'nullable|string|regex:/^[\pL\s\-]+$/u|max:255',
             'apellido2' => 'nullable|string|regex:/^[\pL\s\-]+$/u|max:255',
+<<<<<<< HEAD
             'fecha_nacimiento' => 'required|date|before:'.now()->subYears(18)->format('Y-m-d').'|after:'.now()->subYears(100)->format('Y-m-d'),
+=======
+            'fecha_nacimiento' => 'required|date|before:-18 years|after=-100 years',
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
             'telefono' => 'required|regex:/^\+?[0-9\s]{9,15}$/',
             'direccion' => 'required|string|max:255',
             'ciudad' => 'required|string|max:100',

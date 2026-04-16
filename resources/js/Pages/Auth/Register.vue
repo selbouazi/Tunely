@@ -86,7 +86,11 @@ const submit = () => {
                         id="nombre"
                         type="text"
                         class="mt-1 block w-full transition-colors"
+<<<<<<< HEAD
                         :class="focusedField === 'nombre' ? 'ring-2 ring-[#E87F24]' : ''"
+=======
+                        :class="focusedField === 'nombre' ? 'ring-2 ring-green-500' : ''"
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                         v-model="form.nombre"
                         required
                         autofocus
@@ -101,8 +105,13 @@ const submit = () => {
                     <TextInput
                         id="apellido1"
                         type="text"
+<<<<<<< HEAD
                         class="mt-1 block w-full bg-[#FEFDDF]"
                         :class="focusedField === 'apellido1' ? 'ring-2 ring-[#E87F24]' : ''"
+=======
+                        class="mt-1 block w-full"
+                        :class="focusedField === 'apellido1' ? 'ring-2 ring-green-500' : ''"
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                         v-model="form.apellido1"
                         @focus="focusedField = 'apellido1'"
                         @blur="focusedField = null"
@@ -114,8 +123,13 @@ const submit = () => {
                     <TextInput
                         id="apellido2"
                         type="text"
+<<<<<<< HEAD
                         class="mt-1 block w-full bg-[#FEFDDF]"
                         :class="focusedField === 'apellido2' ? 'ring-2 ring-[#E87F24]' : ''"
+=======
+                        class="mt-1 block w-full"
+                        :class="focusedField === 'apellido2' ? 'ring-2 ring-green-500' : ''"
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                         v-model="form.apellido2"
                         @focus="focusedField = 'apellido2'"
                         @blur="focusedField = null"
@@ -127,8 +141,13 @@ const submit = () => {
                     <TextInput
                         id="fecha_nacimiento"
                         type="date"
+<<<<<<< HEAD
                         class="mt-1 block w-full bg-[#FEFDDF]"
                         :class="focusedField === 'fecha_nacimiento' ? 'ring-2 ring-[#E87F24]' : ''"
+=======
+                        class="mt-1 block w-full"
+                        :class="focusedField === 'fecha_nacimiento' ? 'ring-2 ring-green-500' : ''"
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                         v-model="form.fecha_nacimiento"
                         required
                         @focus="focusedField = 'fecha_nacimiento'"
@@ -142,8 +161,13 @@ const submit = () => {
                     <TextInput
                         id="telefono"
                         type="tel"
+<<<<<<< HEAD
                         class="mt-1 block w-full bg-[#FEFDDF]"
                         :class="focusedField === 'telefono' ? 'ring-2 ring-[#E87F24]' : ''"
+=======
+                        class="mt-1 block w-full"
+                        :class="focusedField === 'telefono' ? 'ring-2 ring-green-500' : ''"
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                         v-model="form.telefono"
                         placeholder="+34 612 345 678"
                         required
@@ -154,16 +178,26 @@ const submit = () => {
                 </div>
             </div>
 
+<<<<<<< HEAD
             <div class="border-t border-[#73A5CA] pt-4 mt-4">
                 <h3 class="text-[#1a1a1a] font-medium mb-3">Dirección de envío</h3>
+=======
+            <div class="border-t border-gray-700 pt-4 mt-4">
+                <h3 class="text-white font-medium mb-3">Dirección de envío</h3>
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="md:col-span-2">
                         <InputLabel for="direccion" value="Dirección *" />
                         <TextInput
                             id="direccion"
                             type="text"
+<<<<<<< HEAD
                             class="mt-1 block w-full bg-[#FEFDDF]"
                             :class="focusedField === 'direccion' ? 'ring-2 ring-[#E87F24]' : ''"
+=======
+                            class="mt-1 block w-full"
+                            :class="focusedField === 'direccion' ? 'ring-2 ring-green-500' : ''"
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                             v-model="form.direccion"
                             placeholder="Calle, número, piso..."
                             required
@@ -178,8 +212,13 @@ const submit = () => {
                         <TextInput
                             id="ciudad"
                             type="text"
+<<<<<<< HEAD
                             class="mt-1 block w-full bg-[#FEFDDF]"
                             :class="focusedField === 'ciudad' ? 'ring-2 ring-[#E87F24]' : ''"
+=======
+                            class="mt-1 block w-full"
+                            :class="focusedField === 'ciudad' ? 'ring-2 ring-green-500' : ''"
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                             v-model="form.ciudad"
                             required
                             @focus="focusedField = 'ciudad'"
@@ -193,8 +232,13 @@ const submit = () => {
                         <TextInput
                             id="provincia"
                             type="text"
+<<<<<<< HEAD
                             class="mt-1 block w-full bg-[#FEFDDF]"
                             :class="focusedField === 'provincia' ? 'ring-2 ring-[#E87F24]' : ''"
+=======
+                            class="mt-1 block w-full"
+                            :class="focusedField === 'provincia' ? 'ring-2 ring-green-500' : ''"
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                             v-model="form.provincia"
                             required
                             @focus="focusedField = 'provincia'"
@@ -208,8 +252,13 @@ const submit = () => {
                         <TextInput
                             id="codigo_postal"
                             type="text"
+<<<<<<< HEAD
                             class="mt-1 block w-full bg-[#FEFDDF]"
                             :class="focusedField === 'codigo_postal' ? 'ring-2 ring-[#E87F24]' : ''"
+=======
+                            class="mt-1 block w-full"
+                            :class="focusedField === 'codigo_postal' ? 'ring-2 ring-green-500' : ''"
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                             v-model="form.codigo_postal"
                             maxlength="5"
                             placeholder="12345"
@@ -222,7 +271,11 @@ const submit = () => {
                 </div>
             </div>
 
+<<<<<<< HEAD
             <div class="border-t border-[#73A5CA] pt-4 mt-4">
+=======
+            <div class="border-t border-gray-700 pt-4 mt-4">
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                 <div class="flex items-center mb-3">
                     <input
                         id="mismo_direccion_facturacion"
@@ -230,7 +283,11 @@ const submit = () => {
                         v-model="form.mismo_direccion_facturacion"
                         class="mr-2"
                     />
+<<<<<<< HEAD
                     <label for="mismo_direccion_facturacion" class="text-[#1a1a1a] text-sm">
+=======
+                    <label for="mismo_direccion_facturacion" class="text-white text-sm">
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                         La dirección de facturación es la misma que la de envío
                     </label>
                 </div>
@@ -241,7 +298,11 @@ const submit = () => {
                         <TextInput
                             id="direccion_facturacion"
                             type="text"
+<<<<<<< HEAD
                             class="mt-1 block w-full bg-[#FEFDDF]"
+=======
+                            class="mt-1 block w-full"
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                             v-model="form.direccion_facturacion"
                         />
                     </div>
@@ -251,7 +312,11 @@ const submit = () => {
                         <TextInput
                             id="ciudad_facturacion"
                             type="text"
+<<<<<<< HEAD
                             class="mt-1 block w-full bg-[#FEFDDF]"
+=======
+                            class="mt-1 block w-full"
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                             v-model="form.ciudad_facturacion"
                         />
                     </div>
@@ -261,7 +326,11 @@ const submit = () => {
                         <TextInput
                             id="provincia_facturacion"
                             type="text"
+<<<<<<< HEAD
                             class="mt-1 block w-full bg-[#FEFDDF]"
+=======
+                            class="mt-1 block w-full"
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                             v-model="form.provincia_facturacion"
                         />
                     </div>
@@ -271,7 +340,11 @@ const submit = () => {
                         <TextInput
                             id="codigo_postal_facturacion"
                             type="text"
+<<<<<<< HEAD
                             class="mt-1 block w-full bg-[#FEFDDF]"
+=======
+                            class="mt-1 block w-full"
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                             v-model="form.codigo_postal_facturacion"
                             maxlength="5"
                         />
@@ -279,6 +352,7 @@ const submit = () => {
                 </div>
             </div>
 
+<<<<<<< HEAD
             <div class="border-t border-[#73A5CA] pt-4 mt-4">
                 <h3 class="text-[#1a1a1a] font-medium mb-3">Preferencias (opcional)</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -294,11 +368,29 @@ const submit = () => {
                             <option value="bajo">Bajo</option>
                             <option value="bateria">Batería</option>
                             <option value="teclado">Teclado</option>
+=======
+            <div class="border-t border-gray-700 pt-4 mt-4">
+                <h3 class="text-white font-medium mb-3">Preferencias (opcional)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <InputLabel for="preferencias_combustible" value="Preferencia de combustible" />
+                        <select
+                            id="preferencias_combustible"
+                            class="mt-1 block w-full bg-gray-900 border border-gray-700 text-white px-4 py-2 rounded"
+                            v-model="form.preferencias_combustible"
+                        >
+                            <option value="">Selecciona...</option>
+                            <option value="gasolina">Gasolina</option>
+                            <option value="diesel">Diésel</option>
+                            <option value="electrico">Eléctrico</option>
+                            <option value="hibrido">Híbrido</option>
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                             <option value="indiferente">Indiferente</option>
                         </select>
                     </div>
 
                     <div>
+<<<<<<< HEAD
                         <InputLabel for="tipo_conduccion" value="Nivel de experiencia" />
                         <select
                             id="tipo_conduccion"
@@ -310,19 +402,41 @@ const submit = () => {
                             <option value="carretera">Intermedio</option>
                             <option value="mixta">Avanzado</option>
                             <option value="deportiva">Profesional</option>
+=======
+                        <InputLabel for="tipo_conduccion" value="Tipo de conducción" />
+                        <select
+                            id="tipo_conduccion"
+                            class="mt-1 block w-full bg-gray-900 border border-gray-700 text-white px-4 py-2 rounded"
+                            v-model="form.tipo_conduccion"
+                        >
+                            <option value="">Selecciona...</option>
+                            <option value="urbana">Urbana</option>
+                            <option value="carretera">Carretera</option>
+                            <option value="mixta">Mixta</option>
+                            <option value="deportiva">Deportiva</option>
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                         </select>
                     </div>
                 </div>
             </div>
 
+<<<<<<< HEAD
             <div class="border-t border-[#73A5CA] pt-4 mt-4">
+=======
+            <div class="border-t border-gray-700 pt-4 mt-4">
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                 <div>
                     <InputLabel for="email" value="Email *" />
                     <TextInput
                         id="email"
                         type="email"
+<<<<<<< HEAD
                         class="mt-1 block w-full bg-[#FEFDDF]"
                         :class="focusedField === 'email' ? 'ring-2 ring-[#E87F24]' : ''"
+=======
+                        class="mt-1 block w-full"
+                        :class="focusedField === 'email' ? 'ring-2 ring-green-500' : ''"
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                         v-model="form.email"
                         required
                         autocomplete="username"
@@ -337,8 +451,13 @@ const submit = () => {
                     <TextInput
                         id="password"
                         type="password"
+<<<<<<< HEAD
                         class="mt-1 block w-full bg-[#FEFDDF]"
                         :class="focusedField === 'password' ? 'ring-2 ring-[#E87F24]' : ''"
+=======
+                        class="mt-1 block w-full"
+                        :class="focusedField === 'password' ? 'ring-2 ring-green-500' : ''"
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                         v-model="form.password"
                         required
                         autocomplete="new-password"
@@ -346,9 +465,15 @@ const submit = () => {
                         @blur="focusedField = null"
                     />
                     <div v-if="form.password" class="mt-2">
+<<<<<<< HEAD
                         <label class="text-xs text-[#1a1a1a]/70">Fortaleza:</label>
                         <meter :value="passwordStrength" min="0" max="5" class="w-full h-2 mt-1"></meter>
                         <span class="text-xs" :class="strengthLabel.color.includes('red') ? 'text-red-500' : strengthLabel.color.includes('yellow') ? 'text-yellow-500' : 'text-green-500'">
+=======
+                        <label class="text-xs text-gray-400">Fortaleza:</label>
+                        <meter :value="passwordStrength" min="0" max="5" class="w-full h-2 mt-1"></meter>
+                        <span class="text-xs" :class="strengthLabel.color.includes('red') ? 'text-red-400' : strengthLabel.color.includes('yellow') ? 'text-yellow-400' : 'text-green-400'">
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                             {{ strengthLabel.label }}
                         </span>
                     </div>
@@ -360,8 +485,13 @@ const submit = () => {
                     <TextInput
                         id="password_confirmation"
                         type="password"
+<<<<<<< HEAD
                         class="mt-1 block w-full bg-[#FEFDDF]"
                         :class="focusedField === 'password_confirmation' ? 'ring-2 ring-[#E87F24]' : ''"
+=======
+                        class="mt-1 block w-full"
+                        :class="focusedField === 'password_confirmation' ? 'ring-2 ring-green-500' : ''"
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                         v-model="form.password_confirmation"
                         required
                         autocomplete="new-password"
@@ -375,7 +505,11 @@ const submit = () => {
             <div class="mt-6 flex items-center justify-between">
                 <Link
                     :href="route('login')"
+<<<<<<< HEAD
                     class="rounded-md text-sm text-[#E87F24] underline hover:text-[#FFC81E]"
+=======
+                    class="rounded-md text-sm text-gray-400 underline hover:text-gray-200"
+>>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
                 >
                     ¿Ya tienes cuenta?
                 </Link>
