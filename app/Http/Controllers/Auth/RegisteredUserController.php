@@ -25,11 +25,7 @@ class RegisteredUserController extends Controller
             'nombre' => 'required|string|regex:/^[\pL\s]+$/u|max:255',
             'apellido1' => 'nullable|string|regex:/^[\pL\s\-]+$/u|max:255',
             'apellido2' => 'nullable|string|regex:/^[\pL\s\-]+$/u|max:255',
-<<<<<<< HEAD
             'fecha_nacimiento' => 'required|date|before:'.now()->subYears(18)->format('Y-m-d').'|after:'.now()->subYears(100)->format('Y-m-d'),
-=======
-            'fecha_nacimiento' => 'required|date|before:-18 years|after=-100 years',
->>>>>>> c3ba709c2a6f353371c53604af7192e3ae440f6a
             'telefono' => 'required|regex:/^\+?[0-9\s]{9,15}$/',
             'direccion' => 'required|string|max:255',
             'ciudad' => 'required|string|max:100',
@@ -40,8 +36,8 @@ class RegisteredUserController extends Controller
             'ciudad_facturacion' => 'nullable|string|max:100',
             'provincia_facturacion' => 'nullable|string|max:100',
             'codigo_postal_facturacion' => 'nullable|regex:/^[0-9]{5}$/',
-            'preferencias_combustible' => 'nullable|string|max:50',
-            'tipo_conduccion' => 'nullable|string|max:50',
+            'instrumento_preferido' => 'nullable|string|max:50',
+            'nivel_experiencia' => 'nullable|string|max:50',
             'email' => 'required|string|lowercase|email|max:255|unique:'.User::class,
             'password' => [
                 'required',
@@ -111,8 +107,8 @@ class RegisteredUserController extends Controller
             'ciudad_facturacion' => $ciudadFacturacion,
             'provincia_facturacion' => $provinciaFacturacion,
             'codigo_postal_facturacion' => $cpFacturacion,
-            'preferencias_combustible' => $request->preferencias_combustible,
-            'tipo_conduccion' => $request->tipo_conduccion,
+            'instrumento_preferido' => $request->instrumento_preferido,
+            'nivel_experiencia' => $request->nivel_experiencia,
         ]);
 
         event(new Registered($user));

@@ -22,8 +22,8 @@ const form = useForm({
     ciudad_facturacion: '',
     provincia_facturacion: '',
     codigo_postal_facturacion: '',
-    preferencias_combustible: '',
-    tipo_conduccion: '',
+    instrumento_preferido: '',
+    nivel_experiencia: '',
     email: '',
     password: '',
     password_confirmation: '',
@@ -283,33 +283,34 @@ const submit = () => {
                 <h3 class="text-[#1a1a1a] font-medium mb-3">Preferencias (opcional)</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                        <InputLabel for="preferencias_combustible" value="Preferencia de instrumento" />
+                        <InputLabel for="instrumento_preferido" value="Instrumento preferido" />
                         <select
-                            id="preferencias_combustible"
+                            id="instrumento_preferido"
                             class="mt-1 block w-full bg-[#FEFDDF] border border-[#73A5CA] text-[#1a1a1a] px-4 py-2 rounded"
-                            v-model="form.preferencias_combustible"
+                            v-model="form.instrumento_preferido"
                         >
                             <option value="">Selecciona...</option>
                             <option value="guitarra">Guitarra</option>
                             <option value="bajo">Bajo</option>
                             <option value="bateria">Batería</option>
                             <option value="teclado">Teclado</option>
+                            <option value="viento">Viento</option>
                             <option value="indiferente">Indiferente</option>
                         </select>
                     </div>
 
                     <div>
-                        <InputLabel for="tipo_conduccion" value="Nivel de experiencia" />
+                        <InputLabel for="nivel_experiencia" value="Nivel de experiencia" />
                         <select
-                            id="tipo_conduccion"
+                            id="nivel_experiencia"
                             class="mt-1 block w-full bg-[#FEFDDF] border border-[#73A5CA] text-[#1a1a1a] px-4 py-2 rounded"
-                            v-model="form.tipo_conduccion"
+                            v-model="form.nivel_experiencia"
                         >
                             <option value="">Selecciona...</option>
-                            <option value="urbana">Principiante</option>
-                            <option value="carretera">Intermedio</option>
-                            <option value="mixta">Avanzado</option>
-                            <option value="deportiva">Profesional</option>
+                            <option value="principiante">Principiante</option>
+                            <option value="intermedio">Intermedio</option>
+                            <option value="avanzado">Avanzado</option>
+                            <option value="profesional">Profesional</option>
                         </select>
                     </div>
                 </div>

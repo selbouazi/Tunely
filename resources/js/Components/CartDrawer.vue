@@ -84,13 +84,13 @@ const cartTotal = () => {
                         >
                             Vaciar
                         </button>
-                        <Link 
-                            href="/checkout" 
-                            class="flex-1 bg-[#E87F24] text-white text-center px-4 py-2 rounded hover:bg-[#FFC81E]"
-                            @click="emit('close')"
+                        <button 
+                            disabled
+                            class="flex-1 bg-gray-400 text-white text-center px-4 py-2 rounded cursor-not-allowed"
+                            title="Próximamente disponible"
                         >
                             Finalizar compra
-                        </Link>
+                        </button>
                     </div>
                 </div>
             </div>
