@@ -12,6 +12,18 @@ class Order extends Model
         'user_id',
         'total',
         'estado',
+        'shipping_name',
+        'shipping_address',
+        'shipping_city',
+        'shipping_province',
+        'shipping_postal_code',
+        'shipping_phone',
+        'billing_same_as_shipping',
+        'billing_name',
+        'billing_address',
+        'billing_city',
+        'billing_province',
+        'billing_postal_code',
     ];
 
     protected $casts = [

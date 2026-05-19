@@ -199,7 +199,7 @@ const applyDiscount = () => {
             <div class="p-6">
                 <h2 class="text-lg font-bold text-gray-800 mb-2">Descuento global</h2>
                 <p class="text-gray-600 text-sm mb-4">
-                    Aplica un descuento a <strong>todos los productos disponibles</strong>. El precio original se guardará automáticamente.
+                    Aplica un descuento a <strong>todos los productos disponibles ({{ instruments.filter(v => v.disponible).length }} productos)</strong>. El precio original se guardará automáticamente.
                 </p>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Porcentaje de descuento (%)</label>
@@ -211,6 +211,9 @@ const applyDiscount = () => {
                         class="w-full border border-gray-300 px-3 py-2 rounded"
                         required
                     >
+                </div>
+                <div v-if="discountPercent > 0" class="mt-3 bg-yellow-50 border border-yellow-200 text-yellow-800 text-sm p-3 rounded">
+                    Se aplicará un <strong>{{ discountPercent }}%</strong> de descuento a todos los productos disponibles. ¿Confirmas?
                 </div>
                 <div class="flex justify-end gap-3 mt-6">
                     <button @click="showDiscountModal = false" class="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded hover:bg-gray-50">

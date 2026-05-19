@@ -1,14 +1,13 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Head, Link, usePage } from '@inertiajs/vue3';
-import { ref, inject } from 'vue';
+import { Head, Link } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 const props = defineProps({
     instruments: Array,
     categories: Array,
 });
 
-const page = usePage();
 const selectedCategory = ref('Todos');
 
 const defaultImage = 'https://images.unsplash.com/photo-1510915361894-db8b64506d60?w=500';

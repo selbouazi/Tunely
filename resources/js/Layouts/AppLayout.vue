@@ -1,11 +1,14 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 import CartDrawer from '@/Components/CartDrawer.vue';
 
 const showingMobileMenu = ref(false);
 const cartOpen = ref(false);
 const cart = ref([]);
+const pendingCount = ref(0);
+const pendingItems = ref([]);
+const dismissed = ref(false);
 
 const STORAGE_KEY = 'tunely_cart';
 
@@ -65,10 +68,20 @@ const cartCount = () => {
 
 onMounted(() => {
     loadCart();
-    
+
     window.addEventListener('add-to-cart', (e) => {
         addToCart(e.detail);
     });
+
+    if (route().has('api.pending-comments') && usePage().props.auth.user) {
+        fetch(route('api.pending-comments'))
+            .then(r => r.json())
+            .then(data => {
+                pendingCount.value = data.count;
+                pendingItems.value = data.items;
+            })
+            .catch(() => {});
+    }
 });
 </script>
 
@@ -87,6 +100,7 @@ onMounted(() => {
                         <Link href="/" class="text-[#1a1a1a] hover:text-[#E87F24]">Inicio</Link>
                         <Link href="/catalogo" class="text-[#1a1a1a] hover:text-[#E87F24]">Catálogo</Link>
                         <Link href="/quien-somos" class="text-[#1a1a1a] hover:text-[#E87F24]">Quiénes Somos</Link>
+                        <Link href="/faq" class="text-[#1a1a1a] hover:text-[#E87F24]">FAQ</Link>
                         <Link href="/contacto" class="text-[#1a1a1a] hover:text-[#E87F24]">Contacto</Link>
                     </div>
 
@@ -101,6 +115,7 @@ onMounted(() => {
                         </button>
 
                         <template v-if="$page.props.auth.user">
+                            <Link v-if="$page.props.auth.user.role === 'admin'" href="/admin/dashboard" class="text-[#E87F24] text-sm font-bold hover:text-[#FFC81E]">Admin</Link>
                             <Link :href="route('profile.edit')" class="text-[#1a1a1a] text-sm">{{ $page.props.auth.user.name }}</Link>
                             <Link href="/logout" method="post" as="button" class="text-[#1a1a1a]/70 text-sm">Cerrar sesión</Link>
                         </template>
@@ -123,10 +138,28 @@ onMounted(() => {
                     <Link href="/" class="block py-2 text-[#1a1a1a]">Inicio</Link>
                     <Link href="/catalogo" class="block py-2 text-[#1a1a1a]">Catálogo</Link>
                     <Link href="/quien-somos" class="block py-2 text-[#1a1a1a]">Quiénes Somos</Link>
+                    <Link href="/faq" class="block py-2 text-[#1a1a1a]">FAQ</Link>
                     <Link href="/contacto" class="block py-2 text-[#1a1a1a]">Contacto</Link>
+                    <hr class="border-[#1a1a1a]/20 my-2">
+                    <template v-if="$page.props.auth.user">
+                        <Link v-if="$page.props.auth.user.role === 'admin'" href="/admin/dashboard" class="block py-2 text-[#E87F24] font-medium">Admin</Link>
+                        <Link :href="route('profile.edit')" class="block py-2 text-[#1a1a1a]">Perfil</Link>
+                        <Link href="/logout" method="post" as="button" class="block py-2 text-[#1a1a1a]/70">Cerrar sesión</Link>
+                    </template>
+                    <template v-else>
+                        <Link href="/login" class="block py-2 text-[#1a1a1a]">Iniciar sesión</Link>
+                        <Link href="/register" class="block py-2 text-[#1a1a1a] font-bold">Registro</Link>
+                    </template>
                 </div>
             </div>
         </nav>
+
+        <div v-if="pendingCount > 0 && !dismissed" class="bg-[#FFC81E] text-[#1a1a1a] text-sm text-center py-2 px-4">
+            <span>Tienes <strong>{{ pendingCount }}</strong> {{ pendingCount === 1 ? 'producto pendiente' : 'productos pendientes' }} de valorar.
+                <Link :href="route('catalogo')" class="underline font-medium">Valorar ahora</Link>
+            </span>
+            <button @click="dismissed = true" class="ml-3 font-bold hover:text-[#E87F24]">&times;</button>
+        </div>
 
         <main class="flex-grow">
             <slot :add-to-cart="addToCart" />
@@ -153,6 +186,7 @@ onMounted(() => {
                         <ul class="space-y-1">
                             <li><Link href="/catalogo">Catálogo</Link></li>
                             <li><Link href="/quien-somos">Quiénes Somos</Link></li>
+                            <li><Link href="/faq">FAQ</Link></li>
                             <li><Link href="/contacto">Contacto</Link></li>
                         </ul>
                     </div>

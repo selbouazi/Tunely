@@ -15,6 +15,7 @@ const form = useForm({
 
 const changeStatus = () => {
     if (!selectedStatus.value) return;
+    if (!confirm(`¿Cambiar el estado del pedido #${props.order.id} a "${selectedStatus.value}"?`)) return;
     form.estado = selectedStatus.value;
     form.patch(route('admin.pedidos.update-status', props.order.id));
 };
@@ -49,7 +50,7 @@ const statusStyles = {
                         <span class="ml-2 text-xs px-2 py-1 rounded" :class="statusStyles[order.estado]">{{ order.estado }}</span>
                     </p>
                     <p><span class="font-medium text-gray-600">Total:</span> {{ order.total }}€</p>
-                    <p><span class="font-medium text-gray-600">Fecha:</span> {{ order.created_at }}</p>
+                    <p><span class="font-medium text-gray-600">Fecha:</span> {{ new Date(order.created_at).toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' }) }}</p>
                 </div>
 
                 <div v-if="availableStatuses.length > 0" class="mt-6 pt-4 border-t">

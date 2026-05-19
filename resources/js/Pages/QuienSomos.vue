@@ -3,6 +3,7 @@ import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
 
 const imgMusic = 'https://images.unsplash.com/photo-1510915361894-db8b64506d60?w=600';
+const videoUrl = '/video/videoMarketing.mp4';
 </script>
 
 <template>
@@ -34,6 +35,19 @@ const imgMusic = 'https://images.unsplash.com/photo-1510915361894-db8b64506d60?w
                     <div>
                         <img :src="imgMusic" alt="Tunely" class="w-full rounded">
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-[#FEFDDF] py-12 px-4">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-2xl font-bold mb-8 text-center text-[#1a1a1a]">Conoce mejor a Tunely</h2>
+                <div class="bg-[#1a1a1a] rounded-lg overflow-hidden shadow-lg">
+                    <video controls class="w-full aspect-video">
+                        <source :src="videoUrl" type="video/mp4">
+                        <track kind="subtitles" src="/video/presentacion.vtt" srclang="es" label="Español" default>
+                        Tu navegador no soporta la reproducción de video.
+                    </video>
                 </div>
             </div>
         </section>

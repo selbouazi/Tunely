@@ -47,7 +47,7 @@ const deleteRating = (id) => {
                             <span class="text-yellow-500">{{ '★'.repeat(r.rating) }}{{ '☆'.repeat(5 - r.rating) }}</span>
                         </td>
                         <td class="px-4 py-3 text-[#1a1a1a]/70 max-w-xs truncate">{{ r.comment || '-' }}</td>
-                        <td class="px-4 py-3 text-gray-500">{{ r.created_at }}</td>
+                        <td class="px-4 py-3 text-gray-500">{{ new Date(r.created_at).toLocaleDateString('es-ES') }}</td>
                         <td class="px-4 py-3 text-right">
                             <button @click="deleteRating(r.id)" class="text-red-500 hover:underline text-sm">Eliminar</button>
                         </td>

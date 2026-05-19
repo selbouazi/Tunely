@@ -11,8 +11,15 @@ defineProps({
     <AdminLayout>
         <Head title="Pedidos - Admin Tunely" />
 
-        <div class="flex justify-between items-center mb-6">
+        <div class="mb-6">
             <h1 class="text-2xl font-bold text-gray-800">Pedidos</h1>
+        </div>
+
+        <div v-if="$page.props.flash?.success" class="bg-green-100 text-green-800 px-4 py-3 rounded mb-4 text-sm">
+            {{ $page.props.flash.success }}
+        </div>
+        <div v-if="$page.props.flash?.error" class="bg-red-100 text-red-800 px-4 py-3 rounded mb-4 text-sm">
+            {{ $page.props.flash.error }}
         </div>
 
         <div class="bg-white rounded shadow overflow-x-auto">
@@ -46,7 +53,7 @@ defineProps({
                                 {{ order.estado }}
                             </span>
                         </td>
-                        <td class="px-4 py-3 text-gray-500">{{ order.created_at }}</td>
+                        <td class="px-4 py-3 text-gray-500">{{ new Date(order.created_at).toLocaleDateString('es-ES') }}</td>
                         <td class="px-4 py-3 text-right">
                             <Link :href="route('admin.pedidos.show', order.id)" class="text-[#E87F24] hover:underline text-sm">Ver</Link>
                         </td>

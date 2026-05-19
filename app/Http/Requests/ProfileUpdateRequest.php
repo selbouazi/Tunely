@@ -8,11 +8,6 @@ use Illuminate\Validation\Rule;
 
 class ProfileUpdateRequest extends FormRequest
 {
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
@@ -25,6 +20,18 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            'telefono' => 'nullable|regex:/^\+?[0-9\s]{9,15}$/',
+            'direccion' => 'nullable|string|max:255',
+            'ciudad' => 'nullable|string|max:100',
+            'provincia' => 'nullable|string|max:100',
+            'codigo_postal' => 'nullable|regex:/^[0-9]{5}$/',
+            'direccion_facturacion' => 'nullable|string|max:255',
+            'ciudad_facturacion' => 'nullable|string|max:100',
+            'provincia_facturacion' => 'nullable|string|max:100',
+            'codigo_postal_facturacion' => 'nullable|regex:/^[0-9]{5}$/',
+            'fecha_nacimiento' => 'nullable|date',
+            'instrumento_preferido' => 'nullable|string|max:50',
+            'nivel_experiencia' => 'nullable|string|max:50',
         ];
     }
 }

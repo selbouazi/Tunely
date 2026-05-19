@@ -40,6 +40,8 @@ Route::get('/contacto', function () {
     ]);
 })->name('contacto');
 
+Route::post('/contacto', \App\Http\Controllers\ContactController::class)->name('contacto.store');
+
 Route::get('/faq', function () {
     return Inertia::render('FAQ', [
         'faqs' => \App\Models\Faq::where('active', true)->orderBy('order')->get(),
@@ -47,11 +49,15 @@ Route::get('/faq', function () {
 })->name('faq');
 
 Route::get('/aviso-legal', function () {
-    return Inertia::render('AvisoLegal');
+    return Inertia::render('AvisoLegal', [
+        'contactInfo' => \App\Models\ContactInfo::orderBy('order')->get(),
+    ]);
 })->name('aviso-legal');
 
 Route::get('/privacidad', function () {
-    return Inertia::render('Privacidad');
+    return Inertia::render('Privacidad', [
+        'contactInfo' => \App\Models\ContactInfo::orderBy('order')->get(),
+    ]);
 })->name('privacidad');
 
 Route::get('/condiciones', function () {
@@ -86,16 +92,36 @@ Route::post('/catalogo/{instrument}/rating', [\App\Http\Controllers\RatingContro
     ->name('instrumento.rating.store');
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    $orders = auth()->user()->orders()
+        ->with('items.instrument')
+        ->orderByDesc('created_at')
+        ->get();
+
+    return Inertia::render('Dashboard', [
+        'orders' => $orders,
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
+        $topProducts = \App\Models\OrderItem::selectRaw('instrument_id, SUM(cantidad) as total_vendido')
+            ->whereHas('order', fn($q) => $q->where('estado', '!=', 'cancelado'))
+            ->groupBy('instrument_id')
+            ->orderByDesc('total_vendido')
+            ->take(10)
+            ->with('instrument')
+            ->get()
+            ->map(fn($item) => [
+                'label' => $item->instrument->marca . ' ' . $item->instrument->modelo,
+                'value' => (int) $item->total_vendido,
+            ]);
+
         return Inertia::render('Admin/Dashboard', [
             'totalProductos' => Instrument::count(),
             'totalPedidos' => Order::count(),
             'totalUsuarios' => User::count(),
             'totalCategorias' => Category::count(),
+            'topProducts' => $topProducts,
         ]);
     })->name('admin.dashboard');
 
@@ -124,6 +150,13 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->group(fu
 
     Route::get('/opiniones', [\App\Http\Controllers\RatingController::class, 'adminIndex'])->name('admin.opiniones.index');
     Route::delete('/opiniones/{rating}', [\App\Http\Controllers\RatingController::class, 'destroy'])->name('admin.opiniones.destroy');
+
+    Route::get('/mensajes', function () {
+        $messages = \App\Models\ContactMessage::orderByDesc('created_at')->get();
+        return Inertia::render('Admin/Messages/Index', [
+            'messages' => $messages,
+        ]);
+    })->name('admin.mensajes.index');
 });
 
 Route::middleware('auth')->group(function () {
@@ -134,6 +167,24 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::get('/api/pending-comments', function () {
+        $pending = \App\Models\PendingComment::with('instrument')
+            ->where('user_id', auth()->id())
+            ->where('has_commented', false)
+            ->get()
+            ->map(fn($p) => [
+                'id' => $p->id,
+                'instrument_id' => $p->instrument_id,
+                'instrument_name' => $p->instrument->marca . ' ' . $p->instrument->modelo,
+                'order_id' => $p->order_id,
+            ]);
+
+        return response()->json([
+            'count' => $pending->count(),
+            'items' => $pending,
+        ]);
+    })->name('api.pending-comments');
 });
 
 require __DIR__.'/auth.php';

@@ -1,6 +1,6 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
 
 const props = defineProps({
@@ -9,7 +9,6 @@ const props = defineProps({
     canRate: Boolean,
 });
 
-const page = usePage();
 const defaultImage = 'https://images.unsplash.com/photo-1510915361894-db8b64506d60?w=500';
 
 const form = useForm({
