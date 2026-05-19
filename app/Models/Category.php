@@ -16,4 +16,9 @@ class Category extends Model
     {
         return $this->hasMany(Instrument::class);
     }
+
+    public function subcategories(): HasMany
+    {
+        return $this->hasMany(Subcategory::class);
+    }
 }

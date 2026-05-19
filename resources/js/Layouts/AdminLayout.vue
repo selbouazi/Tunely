@@ -23,11 +23,17 @@ const user = usePage().props.auth.user;
                 <Link href="/admin/categorias" class="block px-3 py-2 rounded hover:bg-gray-700 text-sm">
                     Categorías
                 </Link>
+                <Link href="/admin/subcategorias" class="block px-3 py-2 rounded hover:bg-gray-700 text-sm">
+                    Subcategorías
+                </Link>
                 <Link href="/admin/productos" class="block px-3 py-2 rounded hover:bg-gray-700 text-sm">
                     Productos
                 </Link>
                 <Link href="/admin/pedidos" class="block px-3 py-2 rounded hover:bg-gray-700 text-sm">
                     Pedidos
+                </Link>
+                <Link href="/admin/opiniones" class="block px-3 py-2 rounded hover:bg-gray-700 text-sm">
+                    Opiniones
                 </Link>
                 <hr class="border-gray-700 my-2">
                 <Link href="/" class="block px-3 py-2 rounded hover:bg-gray-700 text-sm text-gray-400">

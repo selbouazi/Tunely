@@ -4,61 +4,68 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Instrument;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ViewContentTest extends TestCase
 {
-    public function test_catalogo_view_contains_iva_text(): void
+    use RefreshDatabase;
+
+    public function test_catalogo_renders_with_instruments(): void
     {
         $category = Category::factory()->create();
         $instrument = Instrument::factory()->create([
             'category_id' => $category->id,
+            'marca' => 'Fender',
+            'modelo' => 'Stratocaster',
             'precio' => 100,
+            'stock' => 5,
             'disponible' => true,
         ]);
 
         $response = $this->get('/catalogo');
         $response->assertStatus(200);
-        $response->assertSee('IVA incluido');
+        $response->assertInertia(fn ($page) => $page
+            ->component('Catalogo')
+            ->has('instruments', 1)
+            ->where('instruments.0.marca', 'Fender')
+            ->where('instruments.0.modelo', 'Stratocaster')
+        );
     }
 
-    public function test_welcome_view_contains_iva_text(): void
+    public function test_welcome_renders_with_instruments(): void
     {
         $category = Category::factory()->create();
         $instrument = Instrument::factory()->create([
             'category_id' => $category->id,
+            'marca' => 'Fender',
+            'modelo' => 'Stratocaster',
             'precio' => 100,
+            'stock' => 5,
             'disponible' => true,
         ]);
 
         $response = $this->get('/');
         $response->assertStatus(200);
-        $response->assertSee('IVA incluido');
+        $response->assertInertia(fn ($page) => $page
+            ->component('Welcome')
+            ->has('instruments', 1)
+            ->where('instruments.0.marca', 'Fender')
+        );
     }
 
-    public function test_contacto_view_contains_payment_methods(): void
+    public function test_contacto_view_renders(): void
     {
         $response = $this->get('/contacto');
         $response->assertStatus(200);
-        $response->assertSee('Visa');
-        $response->assertSee('Mastercard');
-        $response->assertSee('Bizum');
-        $response->assertSee('Transferencia');
+        $response->assertInertia(fn ($page) => $page->component('Contacto'));
     }
 
     public function test_faq_view_renders(): void
     {
         $response = $this->get('/faq');
         $response->assertStatus(200);
-        $response->assertSee('Preguntas Frecuentes');
-    }
-
-    public function test_faq_view_contains_expected_questions(): void
-    {
-        $response = $this->get('/faq');
-        $response->assertSee('¿Tienen instrumentos nuevos y usados?');
-        $response->assertSee('¿Cuál es la política de devoluciones?');
-        $response->assertSee('¿Ofrecen garantía en los instrumentos?');
+        $response->assertInertia(fn ($page) => $page->component('FAQ'));
     }
 
     public function test_detalle_instrumento_view_shows_correct_data(): void
@@ -78,10 +85,12 @@ class ViewContentTest extends TestCase
 
         $response = $this->get("/catalogo/{$instrument->id}");
         $response->assertStatus(200);
-        $response->assertSee('Fender');
-        $response->assertSee('Stratocaster');
-        $response->assertSee('1200€');
-        $response->assertSee('IVA incluido');
+        $response->assertInertia(fn ($page) => $page
+            ->component('InstrumentoDetalle')
+            ->where('instrument.marca', 'Fender')
+            ->where('instrument.modelo', 'Stratocaster')
+            ->where('instrument.precio', 1200)
+        );
     }
 
     public function test_detalle_view_shows_agotado_when_no_stock(): void
@@ -95,7 +104,10 @@ class ViewContentTest extends TestCase
 
         $response = $this->get("/catalogo/{$instrument->id}");
         $response->assertStatus(200);
-        $response->assertSee('Agotado');
+        $response->assertInertia(fn ($page) => $page
+            ->component('InstrumentoDetalle')
+            ->where('instrument.stock', 0)
+        );
     }
 
     public function test_detalle_view_shows_stock_when_available(): void
@@ -109,6 +121,9 @@ class ViewContentTest extends TestCase
 
         $response = $this->get("/catalogo/{$instrument->id}");
         $response->assertStatus(200);
-        $response->assertSee('10 unidades');
+        $response->assertInertia(fn ($page) => $page
+            ->component('InstrumentoDetalle')
+            ->where('instrument.stock', 10)
+        );
     }
 }

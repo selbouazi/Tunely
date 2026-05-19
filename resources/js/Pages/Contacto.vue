@@ -2,12 +2,13 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
 
-const contactInfo = {
-    address: 'C/ Gran Via, 123',
-    city: '08014 Barcelona',
-    phone: '+34 93 123 45 67',
-    email: 'info@tunely.es',
-    hours: 'Lunes - Viernes: 9:00 - 20:00'
+const props = defineProps({
+    contactInfo: Array,
+});
+
+const getByType = (type) => {
+    const item = props.contactInfo.find(i => i.type === type);
+    return item ? item.value : '';
 };
 </script>
 
@@ -47,10 +48,9 @@ const contactInfo = {
                     <div>
                         <h2 class="text-xl font-bold mb-6 text-[#1a1a1a]">Información de contacto</h2>
                         <div class="space-y-4 text-[#1a1a1a]/70">
-                            <p><strong class="text-[#1a1a1a]">Dirección:</strong> {{ contactInfo.address }}, {{ contactInfo.city }}</p>
-                            <p><strong class="text-[#1a1a1a]">Teléfono:</strong> {{ contactInfo.phone }}</p>
-                            <p><strong class="text-[#1a1a1a]">Email:</strong> {{ contactInfo.email }}</p>
-                            <p><strong class="text-[#1a1a1a]">Horario:</strong> {{ contactInfo.hours }}</p>
+                            <p v-for="item in props.contactInfo" :key="item.id">
+                                <strong class="text-[#1a1a1a]">{{ item.label }}:</strong> {{ item.value }}
+                            </p>
                         </div>
                     </div>
                 </div>

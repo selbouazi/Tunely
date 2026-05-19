@@ -23,12 +23,18 @@ class Instrument extends Model
         'imagen',
         'descripcion',
         'category_id',
+        'subcategory_id',
         'disponible',
     ];
 
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function subcategory(): BelongsTo
+    {
+        return $this->belongsTo(Subcategory::class);
     }
 
     public function orderItems(): HasMany

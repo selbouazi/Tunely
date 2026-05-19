@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Instrument;
+use App\Models\Subcategory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -13,7 +14,7 @@ class InstrumentController extends Controller
 {
     public function index(): Response
     {
-        $instruments = Instrument::with('category')->withCount('orderItems')->orderBy('created_at', 'desc')->get();
+        $instruments = Instrument::with('category', 'subcategory')->withCount('orderItems')->orderBy('created_at', 'desc')->get();
         $categories = Category::all();
 
         return Inertia::render('Admin/Instruments/Index', [
@@ -25,7 +26,8 @@ class InstrumentController extends Controller
     public function create(): Response
     {
         return Inertia::render('Admin/Instruments/Form', [
-            'categories' => Category::all(),
+            'categories' => Category::with('subcategories')->get(),
+            'subcategories' => Subcategory::all(),
         ]);
     }
 
@@ -41,6 +43,7 @@ class InstrumentController extends Controller
             'imagen' => 'nullable|string|max:500',
             'descripcion' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:subcategories,id',
             'disponible' => 'boolean',
         ]);
 
@@ -52,8 +55,9 @@ class InstrumentController extends Controller
     public function edit(Instrument $instrument): Response
     {
         return Inertia::render('Admin/Instruments/Form', [
-            'instrument' => $instrument->load('category'),
-            'categories' => Category::all(),
+            'instrument' => $instrument->load('category', 'subcategory'),
+            'categories' => Category::with('subcategories')->get(),
+            'subcategories' => Subcategory::all(),
         ]);
     }
 
@@ -69,6 +73,7 @@ class InstrumentController extends Controller
             'imagen' => 'nullable|string|max:500',
             'descripcion' => 'nullable|string',
             'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:subcategories,id',
             'disponible' => 'boolean',
         ]);
 
@@ -107,7 +112,7 @@ class InstrumentController extends Controller
         $porcentaje = $validated['porcentaje'];
         Instrument::where('disponible', true)->chunkById(100, function ($instruments) use ($porcentaje) {
             foreach ($instruments as $instrument) {
-                if ($instrument->precio_original === null || $instrument->precio_original == 0) {
+                if ($instrument->precio_original === null || $instrument->precio_original == 0 || $instrument->precio_original == $instrument->precio) {
                     $instrument->precio_original = $instrument->precio;
                 }
                 $instrument->precio = round($instrument->precio * (1 - $porcentaje / 100), 2);

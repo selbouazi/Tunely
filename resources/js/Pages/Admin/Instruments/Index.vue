@@ -100,6 +100,7 @@ const applyDiscount = () => {
                     <tr>
                         <th class="text-left px-4 py-3">Producto</th>
                         <th class="text-left px-4 py-3">Categoría</th>
+                        <th class="text-left px-4 py-3">Subcategoría</th>
                         <th class="text-right px-4 py-3">Precio</th>
                         <th class="text-center px-4 py-3">
                             <span :class="sortStock ? 'text-[#E87F24]' : ''">Stock</span>
@@ -116,6 +117,7 @@ const applyDiscount = () => {
                             <span class="text-gray-400 text-xs block">{{ v.tipo }}</span>
                         </td>
                         <td class="px-4 py-3 text-gray-500">{{ v.category?.nombre }}</td>
+                        <td class="px-4 py-3 text-gray-400">{{ v.subcategory?.nombre ?? '-' }}</td>
                         <td class="px-4 py-3 text-right">{{ v.precio }}€</td>
                         <td class="px-4 py-3 text-center">
                             <span :class="v.stock === 0 ? 'text-red-600 font-bold' : v.stock <= 3 ? 'text-yellow-600' : ''">
@@ -142,7 +144,7 @@ const applyDiscount = () => {
                         </td>
                     </tr>
                     <tr v-if="filtered.length === 0">
-                        <td colspan="7" class="px-4 py-8 text-center text-gray-500">No hay productos</td>
+                        <td colspan="8" class="px-4 py-8 text-center text-gray-500">No hay productos</td>
                     </tr>
                 </tbody>
             </table>

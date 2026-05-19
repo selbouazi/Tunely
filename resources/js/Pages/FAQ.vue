@@ -3,32 +3,9 @@ import { ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
 
-const faqs = [
-    {
-        question: '¿Tienen instrumentos nuevos y usados?',
-        answer: 'Sí, en Tunely vendemos tanto instrumentos musicales nuevos como de segunda mano. Cada instrumento usado pasa por nuestro control de calidad.'
-    },
-    {
-        question: '¿Cuál es la política de devoluciones?',
-        answer: 'Puedes devolver cualquier instrumento en un plazo de 14 días desde la compra, siempre que esté en perfecto estado y con su embalaje original.'
-    },
-    {
-        question: '¿Ofrecen garantía en los instrumentos?',
-        answer: 'Sí, todos nuestros instrumentos nuevos incluyen garantía de fabricante. Los instrumentos usados tienen garantía de 6 meses.'
-    },
-    {
-        question: '¿Cómo puedo vender mi instrumento?',
-        answer: 'Contáctanos a través de nuestro formulario indicando los datos del instrumento. Te ofreceremos una valoración gratuita en 24-48 horas.'
-    },
-    {
-        question: '¿Realizan envíos a toda España?',
-        answer: 'Sí, realizamos envíos a toda España peninsula. Los gastos de envío son gratuitos para pedidos superiores a 100€.'
-    },
-    {
-        question: '¿Qué formas de pago aceptan?',
-        answer: 'Aceptamos Visa, Mastercard, Bizum y transferencia bancaria. Todas las transacciones están securizadas.'
-    }
-];
+const props = defineProps({
+    faqs: Array,
+});
 
 const openIndex = ref(null);
 
@@ -51,7 +28,7 @@ const toggle = (index) => {
         <section class="bg-white py-12 px-4">
             <div class="max-w-3xl mx-auto">
                 <div class="space-y-4">
-                    <div v-for="(faq, index) in faqs" :key="index" class="border border-[#73A5CA] rounded">
+                    <div v-for="(faq, index) in props.faqs" :key="faq.id" class="border border-[#73A5CA] rounded">
                         <button 
                             @click="toggle(index)"
                             class="w-full px-4 py-3 text-left flex justify-between items-center hover:bg-[#FEFDDF]"

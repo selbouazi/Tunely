@@ -4,10 +4,13 @@ namespace Tests\Feature;
 
 use App\Models\Category;
 use App\Models\Instrument;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class RoutesTest extends TestCase
 {
+    use RefreshDatabase;
+
     public function test_homepage_returns_successful_response(): void
     {
         $response = $this->get('/');

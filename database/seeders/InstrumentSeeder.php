@@ -22,6 +22,7 @@ class InstrumentSeeder extends Seeder
                 'imagen' => $imagen,
                 'descripcion' => 'Guitarra eléctrica Stratocaster de gama media. Cuerpo de aliso, mástil de arce, diapasón de amaranto. Perfecta para rock, blues y jazz.',
                 'category_id' => 1,
+                'subcategory_id' => 1,
                 'disponible' => true,
             ],
             [
@@ -34,6 +35,7 @@ class InstrumentSeeder extends Seeder
                 'imagen' => $imagen,
                 'descripcion' => 'Piano digital compacto de 88 teclas con acción de martillo. Sonido realista y teclado realista. Ideal para principiantes.',
                 'category_id' => 4,
+                'subcategory_id' => 9,
                 'disponible' => true,
             ],
             [
@@ -46,6 +48,7 @@ class InstrumentSeeder extends Seeder
                 'imagen' => $imagen,
                 'descripcion' => 'Batería electrónica V-Drums de уровень medio. Módulos de sonido avanzados, pads de mesh. Perfecta para practicar en casa.',
                 'category_id' => 3,
+                'subcategory_id' => 7,
                 'disponible' => true,
             ],
             [
@@ -58,6 +61,7 @@ class InstrumentSeeder extends Seeder
                 'imagen' => $imagen,
                 'descripcion' => 'Guitarra acústica usada en buen estado. Cuerpo dreadnought, tapa de pino, fondo y aros de sapeli. Sonido cálido y equilibrado.',
                 'category_id' => 1,
+                'subcategory_id' => 2,
                 'disponible' => true,
             ],
             [
@@ -70,6 +74,7 @@ class InstrumentSeeder extends Seeder
                 'imagen' => $imagen,
                 'descripcion' => 'Sintetizador analógico de 8 voces con osciladores digitales. Polifónico, ideal para producción electrónica y sound design.',
                 'category_id' => 5,
+                'subcategory_id' => 11,
                 'disponible' => true,
             ],
             [
@@ -82,6 +87,7 @@ class InstrumentSeeder extends Seeder
                 'imagen' => $imagen,
                 'descripcion' => 'Batería acústica nivel iniciación. Cascos de caoba, herrajes cromados. Incluye soporte, pedales y palillos.',
                 'category_id' => 3,
+                'subcategory_id' => 6,
                 'disponible' => true,
             ],
             [
@@ -94,18 +100,20 @@ class InstrumentSeeder extends Seeder
                 'imagen' => $imagen,
                 'descripcion' => 'Piano digital compacto y ligero. 88 teclas con acción de martillo. Incluye pedal y soporte.',
                 'category_id' => 4,
+                'subcategory_id' => 9,
                 'disponible' => true,
             ],
             [
                 'marca' => 'Yamaha',
-                'modelo' => 'YBR-125',
+                'modelo' => 'Pacifica 112V',
                 'tipo' => 'usado',
                 'precio' => 280.00,
                 'precio_original' => 380.00,
                 'stock' => 2,
                 'imagen' => $imagen,
-                'descripcion' => 'Guitarra semisólida usada. Cuerpo de ontillo, pastillas P-90. Sonido blues clásico. Muy buen estado.',
+                'descripcion' => 'Guitarra eléctrica usada en buen estado. Cuerpo de aliso, mástil de arce, pastillas HSS. Sonido versátil ideal para rock y blues.',
                 'category_id' => 1,
+                'subcategory_id' => 1,
                 'disponible' => true,
             ],
         ];

@@ -2,9 +2,12 @@
 import AdminLayout from '@/Layouts/AdminLayout.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
+import { computed } from 'vue';
+
 const props = defineProps({
     instrument: Object,
     categories: Array,
+    subcategories: Array,
 });
 
 const form = useForm({
@@ -17,8 +20,18 @@ const form = useForm({
     imagen: props.instrument?.imagen ?? '',
     descripcion: props.instrument?.descripcion ?? '',
     category_id: props.instrument?.category_id ?? '',
+    subcategory_id: props.instrument?.subcategory_id ?? '',
     disponible: props.instrument?.disponible ?? true,
 });
+
+const filteredSubcategories = computed(() => {
+    if (!form.category_id || !props.subcategories) return [];
+    return props.subcategories.filter(s => s.category_id === form.category_id);
+});
+
+const onCategoryChange = () => {
+    form.subcategory_id = '';
+};
 
 const submit = () => {
     if (props.instrument) {
@@ -62,11 +75,18 @@ const submit = () => {
                 </div>
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
-                    <select v-model="form.category_id" class="w-full border border-gray-300 px-3 py-2 rounded bg-white" required>
+                    <select v-model="form.category_id" @change="onCategoryChange" class="w-full border border-gray-300 px-3 py-2 rounded bg-white" required>
                         <option value="">Selecciona...</option>
                         <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.nombre }}</option>
                     </select>
                     <p v-if="form.errors.category_id" class="text-red-500 text-xs mt-1">{{ form.errors.category_id }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Subcategoría</label>
+                    <select v-model="form.subcategory_id" class="w-full border border-gray-300 px-3 py-2 rounded bg-white">
+                        <option value="">Sin subcategoría</option>
+                        <option v-for="sub in filteredSubcategories" :key="sub.id" :value="sub.id">{{ sub.nombre }}</option>
+                    </select>
                 </div>
             </div>
 
