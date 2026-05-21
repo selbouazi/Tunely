@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import CartDrawer from '@/Components/CartDrawer.vue';
 
@@ -9,6 +9,8 @@ const cart = ref([]);
 const pendingCount = ref(0);
 const pendingItems = ref([]);
 const dismissed = ref(false);
+const user = usePage().props.auth?.user;
+const isAdmin = computed(() => user?.role === 'admin');
 
 const STORAGE_KEY = 'tunely_cart';
 
@@ -73,7 +75,7 @@ onMounted(() => {
         addToCart(e.detail);
     });
 
-    if (route().has('api.pending-comments') && usePage().props.auth.user) {
+    if (!isAdmin.value && route().has('api.pending-comments') && usePage().props.auth.user) {
         fetch(route('api.pending-comments'))
             .then(r => r.json())
             .then(data => {
@@ -102,10 +104,11 @@ onMounted(() => {
                         <Link href="/quien-somos" class="text-[#1a1a1a] hover:text-[#E87F24]">Quiénes Somos</Link>
                         <Link href="/faq" class="text-[#1a1a1a] hover:text-[#E87F24]">FAQ</Link>
                         <Link href="/contacto" class="text-[#1a1a1a] hover:text-[#E87F24]">Contacto</Link>
+                        <Link v-if="$page.props.auth.user && !isAdmin" href="/mis-valoraciones" class="text-[#E87F24] text-sm hover:text-[#FFC81E] font-medium">Mis valoraciones</Link>
                     </div>
 
                     <div class="flex items-center space-x-4">
-                        <button @click="cartOpen = true" class="relative p-2 text-[#1a1a1a] hover:text-[#E87F24]">
+                        <button v-if="!isAdmin" @click="cartOpen = true" class="relative p-2 text-[#1a1a1a] hover:text-[#E87F24]">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                             </svg>
@@ -115,13 +118,16 @@ onMounted(() => {
                         </button>
 
                         <template v-if="$page.props.auth.user">
-                            <Link v-if="$page.props.auth.user.role === 'admin'" href="/admin/dashboard" class="text-[#E87F24] text-sm font-bold hover:text-[#FFC81E]">Admin</Link>
-                            <Link :href="route('profile.edit')" class="text-[#1a1a1a] text-sm">{{ $page.props.auth.user.name }}</Link>
-                            <Link href="/logout" method="post" as="button" class="text-[#1a1a1a]/70 text-sm">Cerrar sesión</Link>
+                            <Link :href="route('profile.edit')" class="hidden sm:flex items-center gap-2 text-sm text-[#1a1a1a]">
+                                <img :src="$page.props.auth.user.foto || '/img/profiles/default.webp'" alt="Foto" class="w-7 h-7 rounded-full object-cover border border-gray-200">
+                                {{ $page.props.auth.user.name }}
+                            </Link>
+                            <Link v-if="isAdmin" href="/admin/dashboard" class="text-[#E87F24] text-sm font-bold hidden sm:inline hover:text-[#FFC81E]">Panel</Link>
+                            <Link href="/logout" method="post" as="button" class="text-[#1a1a1a]/70 text-sm hidden sm:inline">Cerrar sesión</Link>
                         </template>
                         <template v-else>
-                            <Link href="/login" class="text-[#1a1a1a] text-sm">Iniciar sesión</Link>
-                            <Link href="/register" class="bg-[#FFC81E] text-[#1a1a1a] px-3 py-1 text-sm font-bold hover:bg-[#E87F24]">Registro</Link>
+                            <Link href="/login" class="text-[#1a1a1a] text-sm hidden sm:inline">Iniciar sesión</Link>
+                            <Link href="/register" class="bg-[#FFC81E] text-[#1a1a1a] px-3 py-1 text-sm font-bold hover:bg-[#E87F24] hidden sm:inline">Registro</Link>
                         </template>
 
                         <button @click="showingMobileMenu = !showingMobileMenu" class="md:hidden p-2 text-[#1a1a1a]">
@@ -142,7 +148,12 @@ onMounted(() => {
                     <Link href="/contacto" class="block py-2 text-[#1a1a1a]">Contacto</Link>
                     <hr class="border-[#1a1a1a]/20 my-2">
                     <template v-if="$page.props.auth.user">
-                        <Link v-if="$page.props.auth.user.role === 'admin'" href="/admin/dashboard" class="block py-2 text-[#E87F24] font-medium">Admin</Link>
+                        <div class="flex items-center gap-3 py-2">
+                            <img :src="$page.props.auth.user.foto || '/img/profiles/default.webp'" alt="Foto" class="w-8 h-8 rounded-full object-cover border border-gray-200">
+                            <span class="font-medium text-[#1a1a1a]">{{ $page.props.auth.user.name }}</span>
+                        </div>
+                        <Link v-if="$page.props.auth.user.role === 'admin'" href="/admin/dashboard" class="block py-2 text-[#E87F24] font-bold">Panel Admin</Link>
+                        <Link v-if="!isAdmin" href="/mis-valoraciones" class="block py-2 text-[#1a1a1a]">Mis valoraciones</Link>
                         <Link :href="route('profile.edit')" class="block py-2 text-[#1a1a1a]">Perfil</Link>
                         <Link href="/logout" method="post" as="button" class="block py-2 text-[#1a1a1a]/70">Cerrar sesión</Link>
                     </template>
@@ -154,9 +165,9 @@ onMounted(() => {
             </div>
         </nav>
 
-        <div v-if="pendingCount > 0 && !dismissed" class="bg-[#FFC81E] text-[#1a1a1a] text-sm text-center py-2 px-4">
+        <div v-if="!isAdmin && pendingCount > 0 && !dismissed" class="bg-[#FFC81E] text-[#1a1a1a] text-sm text-center py-2 px-4">
             <span>Tienes <strong>{{ pendingCount }}</strong> {{ pendingCount === 1 ? 'producto pendiente' : 'productos pendientes' }} de valorar.
-                <Link :href="route('catalogo')" class="underline font-medium">Valorar ahora</Link>
+                <Link href="/mis-valoraciones" class="underline font-medium">Valorar ahora</Link>
             </span>
             <button @click="dismissed = true" class="ml-3 font-bold hover:text-[#E87F24]">&times;</button>
         </div>
@@ -165,7 +176,7 @@ onMounted(() => {
             <slot :add-to-cart="addToCart" />
         </main>
 
-        <CartDrawer 
+        <CartDrawer v-if="!isAdmin"
             :cart="cart" 
             :is-open="cartOpen"
             @close="cartOpen = false"

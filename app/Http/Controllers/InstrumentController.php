@@ -77,6 +77,7 @@ class InstrumentController extends Controller
             'disponible' => 'boolean',
         ]);
 
+        $validated['descuento_general_applied'] = false;
         $instrument->update($validated);
 
         return redirect()->route('admin.instrumentos.index')->with('success', 'Producto actualizado correctamente.');
@@ -101,25 +102,5 @@ class InstrumentController extends Controller
         ]);
 
         return redirect()->route('admin.instrumentos.index')->with('success', 'Producto activado correctamente.');
-    }
-
-    public function bulkDiscount(Request $request): RedirectResponse
-    {
-        $validated = $request->validate([
-            'porcentaje' => 'required|numeric|min:1|max:99',
-        ]);
-
-        $porcentaje = $validated['porcentaje'];
-        Instrument::where('disponible', true)->chunkById(100, function ($instruments) use ($porcentaje) {
-            foreach ($instruments as $instrument) {
-                if ($instrument->precio_original === null || $instrument->precio_original == 0 || $instrument->precio_original == $instrument->precio) {
-                    $instrument->precio_original = $instrument->precio;
-                }
-                $instrument->precio = round($instrument->precio * (1 - $porcentaje / 100), 2);
-                $instrument->save();
-            }
-        });
-
-        return redirect()->route('admin.instrumentos.index')->with('success', "Descuento del {$porcentaje}% aplicado a todos los productos disponibles.");
     }
 }

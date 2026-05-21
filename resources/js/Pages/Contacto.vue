@@ -67,7 +67,11 @@ const getByType = (type) => {
                                 <textarea v-model="form.message" rows="4" placeholder="Mensaje" class="w-full bg-[#FEFDDF] border border-[#73A5CA] px-4 py-2 text-[#1a1a1a] focus:border-[#E87F24] outline-none"></textarea>
                                 <p v-if="form.errors.message" class="text-red-600 text-xs mt-1">{{ form.errors.message }}</p>
                             </div>
-                            <button type="submit" :disabled="form.processing" class="bg-[#E87F24] text-white px-6 py-2 font-bold hover:bg-[#FFC81E] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors">
+                            <button type="submit" :disabled="form.processing" class="bg-[#E87F24] text-white px-6 py-2 font-bold hover:bg-[#FFC81E] disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors inline-flex items-center gap-2">
+                                <svg v-if="form.processing" class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                </svg>
                                 {{ form.processing ? 'Enviando...' : 'Enviar' }}
                             </button>
                         </form>
@@ -81,6 +85,23 @@ const getByType = (type) => {
                             </p>
                         </div>
                     </div>
+                </div>
+            </div>
+        </section>
+        <section class="bg-white pb-12 px-4">
+            <div class="max-w-7xl mx-auto">
+                <h2 class="text-xl font-bold mb-6 text-[#1a1a1a]">Cómo llegar</h2>
+                <div class="w-full aspect-video max-w-3xl rounded shadow overflow-hidden">
+                    <iframe
+                        src="https://www.openstreetmap.org/export/embed.html?bbox=2.1600%2C41.3800%2C2.1800%2C41.3900&amp;layer=mapnik&amp;marker=41.3850%2C2.1700"
+                        width="100%"
+                        height="100%"
+                        style="border:0;"
+                        allowfullscreen
+                        loading="lazy"
+                        referrerpolicy="no-referrer-when-downgrade"
+                        title="Ubicación de Tunely"
+                    ></iframe>
                 </div>
             </div>
         </section>

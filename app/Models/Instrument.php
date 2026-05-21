@@ -13,18 +13,22 @@ class Instrument extends Model
 
     protected $table = 'instruments';
 
+    protected $appends = ['precio_sin_iva', 'precio_con_iva'];
+
     protected $fillable = [
         'marca',
         'modelo',
         'tipo',
         'precio',
         'precio_original',
+        'iva',
         'stock',
         'imagen',
         'descripcion',
         'category_id',
         'subcategory_id',
         'disponible',
+        'descuento_general_applied',
     ];
 
     public function category(): BelongsTo
@@ -45,5 +49,15 @@ class Instrument extends Model
     public function ratings(): HasMany
     {
         return $this->hasMany(Rating::class);
+    }
+
+    public function getPrecioSinIvaAttribute(): float
+    {
+        return round($this->precio / (1 + $this->iva / 100), 2);
+    }
+
+    public function getPrecioConIvaAttribute(): float
+    {
+        return round($this->precio, 2);
     }
 }

@@ -97,6 +97,7 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => 'client',
+            'foto' => '/img/profiles/default.webp',
             'fecha_nacimiento' => $request->fecha_nacimiento,
             'telefono' => $request->telefono,
             'direccion' => $request->direccion,

@@ -1,6 +1,6 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Head, useForm, Link } from '@inertiajs/vue3';
+import { Head, useForm, Link, router } from '@inertiajs/vue3';
 import { ref, computed, onMounted } from 'vue';
 
 const STORAGE_KEY = 'tunely_cart';
@@ -58,14 +58,29 @@ const form = useForm({
 const submit = () => {
     if (cart.value.length === 0) return;
 
-    form.items = cart.value.map(item => ({
-        id: item.id,
-        quantity: item.quantity,
-    }));
+    const data = {
+        items: cart.value.map(item => ({ id: item.id, quantity: item.quantity })),
+        shipping_name: form.shipping_name,
+        shipping_address: form.shipping_address,
+        shipping_city: form.shipping_city,
+        shipping_province: form.shipping_province,
+        shipping_postal_code: form.shipping_postal_code,
+        shipping_phone: form.shipping_phone,
+        billing_same_as_shipping: billingSame.value,
+        billing_name: form.billing_name,
+        billing_address: form.billing_address,
+        billing_city: form.billing_city,
+        billing_province: form.billing_province,
+        billing_postal_code: form.billing_postal_code,
+        card_number: form.card_number,
+        card_expiry: form.card_expiry,
+        card_cvv: form.card_cvv,
+    };
 
-    form.billing_same_as_shipping = billingSame.value;
-
-    form.post(route('checkout.store'));
+    router.post(route('checkout.store'), data, {
+        preserveState: true,
+        onError: () => {},
+    });
 };
 
 const cartTotal = computed(() => {

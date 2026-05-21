@@ -13,10 +13,36 @@ use Inertia\Inertia;
 Route::get('/', function () {
     $instruments = Instrument::with('category')->where('disponible', true)->where('stock', '>', 0)->take(4)->get();
 
+    $carouselDir = public_path('img/carrusel');
+    $carouselItems = [];
+    $titles = [
+        ['title' => 'Tu tienda de instrumentos musicales', 'subtitle' => 'Instrumentos nuevos y de segunda mano'],
+        ['title' => 'Los mejores precios', 'subtitle' => 'Calidad garantizada en cada instrumento'],
+        ['title' => 'Valoraciones reales', 'subtitle' => 'Miles de clientes satisfechos'],
+        ['title' => 'Envío rápido y seguro', 'subtitle' => 'Recibe tu instrumento en 24-48h'],
+        ['title' => 'Atención personalizada', 'subtitle' => 'Te ayudamos a encontrar lo que buscas'],
+    ];
+
+    $files = collect(scandir($carouselDir))
+        ->filter(fn($f) => preg_match('/^\d+\.webp$/', $f))
+        ->sort(SORT_NUMERIC)
+        ->values();
+
+    foreach ($files as $i => $file) {
+        $carouselItems[] = [
+            'image' => "/img/carrusel/{$file}",
+            'title' => $titles[$i % count($titles)]['title'],
+            'subtitle' => $titles[$i % count($titles)]['subtitle'],
+            'cta' => 'Ver Catálogo',
+            'link' => '/catalogo',
+        ];
+    }
+
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'instruments' => $instruments,
+        'carouselItems' => $carouselItems,
     ]);
 })->name('home');
 
@@ -91,7 +117,28 @@ Route::post('/catalogo/{instrument}/rating', [\App\Http\Controllers\RatingContro
     ->middleware('auth')
     ->name('instrumento.rating.store');
 
+Route::post('/catalogo/{instrument}/consulta', function (Request $request, \App\Models\Instrument $instrument) {
+    $validated = $request->validate([
+        'name' => 'required|string|max:255',
+        'email' => 'required|email|max:255',
+        'message' => 'required|string|max:150',
+    ]);
+
+    \App\Models\ContactMessage::create([
+        'name' => $validated['name'],
+        'email' => $validated['email'],
+        'subject' => 'Consulta sobre producto: ' . $instrument->marca . ' ' . $instrument->modelo . ' (#' . $instrument->id . ')',
+        'message' => $validated['message'],
+    ]);
+
+    return redirect()->back()->with('success', 'Consulta enviada correctamente. Te responderemos pronto.');
+})->name('instrumento.consulta');
+
 Route::get('/dashboard', function () {
+    if (auth()->user()->role === 'admin') {
+        return redirect('/admin/dashboard');
+    }
+
     $orders = auth()->user()->orders()
         ->with('items.instrument')
         ->orderByDesc('created_at')
@@ -101,6 +148,29 @@ Route::get('/dashboard', function () {
         'orders' => $orders,
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::get('/mis-valoraciones', function () {
+    $ratings = auth()->user()->ratings()
+        ->with('instrument')
+        ->orderByDesc('created_at')
+        ->get();
+
+    $pendingRatings = \App\Models\PendingComment::with('instrument')
+        ->where('user_id', auth()->id())
+        ->where('has_commented', false)
+        ->get()
+        ->map(fn($p) => [
+            'id' => $p->id,
+            'instrument_id' => $p->instrument_id,
+            'instrument_name' => $p->instrument->marca . ' ' . $p->instrument->modelo,
+            'instrument' => $p->instrument,
+        ]);
+
+    return Inertia::render('MisValoraciones', [
+        'ratings' => $ratings,
+        'pendingRatings' => $pendingRatings,
+    ]);
+})->middleware(['auth', 'verified'])->name('mis-valoraciones');
 
 Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->group(function () {
     Route::get('/dashboard', function () {
@@ -122,6 +192,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->group(fu
             'totalUsuarios' => User::count(),
             'totalCategorias' => Category::count(),
             'topProducts' => $topProducts,
+            'discountActive' => Instrument::where('descuento_general_applied', true)->exists(),
+            'discountAffected' => Instrument::where('descuento_general_applied', true)->count(),
         ]);
     })->name('admin.dashboard');
 
@@ -137,7 +209,6 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->group(fu
     Route::put('/productos/{instrument}', [\App\Http\Controllers\InstrumentController::class, 'update'])->name('admin.instrumentos.update');
     Route::delete('/productos/{instrument}', [\App\Http\Controllers\InstrumentController::class, 'destroy'])->name('admin.instrumentos.destroy');
     Route::patch('/productos/{instrument}/activar', [\App\Http\Controllers\InstrumentController::class, 'activate'])->name('admin.instrumentos.activate');
-    Route::post('/productos/descuento', [\App\Http\Controllers\InstrumentController::class, 'bulkDiscount'])->name('admin.instrumentos.bulk-discount');
 
     Route::get('/subcategorias', [\App\Http\Controllers\SubcategoryController::class, 'index'])->name('admin.subcategorias.index');
     Route::post('/subcategorias', [\App\Http\Controllers\SubcategoryController::class, 'store'])->name('admin.subcategorias.store');
@@ -157,6 +228,13 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->group(fu
             'messages' => $messages,
         ]);
     })->name('admin.mensajes.index');
+
+    Route::post('/descuento-general/aplicar', [\App\Http\Controllers\GeneralDiscountController::class, 'apply'])->name('admin.discount.apply');
+    Route::post('/descuento-general/quitar', [\App\Http\Controllers\GeneralDiscountController::class, 'remove'])->name('admin.discount.remove');
+
+    Route::get('/usuarios', [\App\Http\Controllers\UserController::class, 'index'])->name('admin.usuarios.index');
+    Route::patch('/usuarios/{user}', [\App\Http\Controllers\UserController::class, 'update'])->name('admin.usuarios.update');
+    Route::delete('/usuarios/{user}', [\App\Http\Controllers\UserController::class, 'destroy'])->name('admin.usuarios.destroy');
 });
 
 Route::middleware('auth')->group(function () {
@@ -165,10 +243,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/checkout/success/{order}', [\App\Http\Controllers\CheckoutController::class, 'success'])->name('checkout.success');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::match(['patch', 'post'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/api/pending-comments', function () {
+        if (auth()->user()->role === 'admin') {
+            return response()->json(['count' => 0, 'items' => []]);
+        }
         $pending = \App\Models\PendingComment::with('instrument')
             ->where('user_id', auth()->id())
             ->where('has_commented', false)

@@ -75,7 +75,7 @@ onMounted(() => {
                     <Link href="/catalogo" class="bg-[#E87F24] text-white px-6 py-3 rounded font-bold hover:bg-[#FFC81E]">
                         Seguir comprando
                     </Link>
-                    <Link :href="route('dashboard')" class="border border-[#E87F24] text-[#E87F24] px-6 py-3 rounded font-bold hover:bg-[#E87F24] hover:text-white">
+                    <Link v-if="!$page.props.auth.user || $page.props.auth.user.role !== 'admin'" :href="route('dashboard')" class="border border-[#E87F24] text-[#E87F24] px-6 py-3 rounded font-bold hover:bg-[#E87F24] hover:text-white">
                         Mis pedidos
                     </Link>
                 </div>

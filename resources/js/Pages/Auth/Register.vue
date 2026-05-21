@@ -382,12 +382,19 @@ const submit = () => {
                 </Link>
 
                 <PrimaryButton
+                    v-if="isValidForm && !form.processing"
                     class="px-6"
-                    :class="{ 'opacity-25': form.processing || !isValidForm }"
-                    :disabled="form.processing || !isValidForm"
+                    :disabled="form.processing"
                 >
                     Registrarse
                 </PrimaryButton>
+                <div v-else-if="form.processing" class="flex items-center gap-2 text-sm text-[#E87F24]">
+                    <svg class="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                    </svg>
+                    Registrando...
+                </div>
             </div>
         </form>
     </GuestLayout>

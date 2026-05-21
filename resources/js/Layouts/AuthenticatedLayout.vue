@@ -23,7 +23,7 @@ const showingNavigationDropdown = ref(false);
                                 </Link>
                             </div>
 
-                            <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            <div v-if="$page.props.auth.user?.role !== 'admin'" class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Mis Pedidos
                                 </NavLink>
@@ -73,7 +73,7 @@ const showingNavigationDropdown = ref(false);
 
                 <div :class="{ block: showingNavigationDropdown, hidden: !showingNavigationDropdown }" class="sm:hidden">
                     <div class="space-y-1 pb-3 pt-2">
-                        <ResponsiveNavLink :href="route('dashboard')" :active="route().current('dashboard')">
+                        <ResponsiveNavLink v-if="$page.props.auth.user?.role !== 'admin'" :href="route('dashboard')" :active="route().current('dashboard')">
                             Mis Pedidos
                         </ResponsiveNavLink>
                         <ResponsiveNavLink :href="route('catalogo')">

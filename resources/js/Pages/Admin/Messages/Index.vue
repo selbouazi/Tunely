@@ -13,12 +13,12 @@ defineProps({
 
         <h1 class="text-2xl font-bold mb-6 text-[#1a1a1a]">Mensajes de contacto</h1>
 
-        <div v-if="!messages.length" class="bg-[#FEFDDF] p-6 rounded-lg shadow text-center text-[#1a1a1a]/60">
+        <div v-if="!messages.length" class="bg-white p-6 rounded-lg shadow text-center text-[#1a1a1a]/60">
             No hay mensajes todavía
         </div>
 
         <div v-else class="space-y-4">
-            <div v-for="msg in messages" :key="msg.id" class="bg-[#FEFDDF] p-5 rounded-lg shadow">
+            <div v-for="msg in messages" :key="msg.id" class="bg-white p-5 rounded-lg shadow">
                 <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
                     <div class="font-medium text-[#1a1a1a]">{{ msg.name }} <span class="text-sm font-normal text-[#1a1a1a]/60">&lt;{{ msg.email }}&gt;</span></div>
                     <div class="text-xs text-[#1a1a1a]/50">{{ new Date(msg.created_at).toLocaleString('es-ES') }}</div>

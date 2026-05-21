@@ -38,7 +38,7 @@ const statusLabels = {
 
         <div class="py-12 px-4">
             <div class="mx-auto max-w-7xl">
-                <div v-if="orders.length === 0" class="bg-[#FEFDDF] rounded-lg shadow p-8 text-center">
+                <div v-if="orders.length === 0" class="bg-white rounded-lg shadow p-8 text-center">
                     <p class="text-lg text-[#1a1a1a]/70 mb-4">No tienes pedidos todavía</p>
                     <Link href="/catalogo" class="inline-block bg-[#E87F24] text-white px-6 py-2 font-bold rounded hover:bg-[#FFC81E] hover:text-[#1a1a1a] transition-colors">
                         Explorar productos
@@ -47,21 +47,21 @@ const statusLabels = {
 
                 <div v-else class="space-y-6">
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-[#FEFDDF] p-5 rounded-lg shadow">
+                        <div class="bg-white p-5 rounded-lg shadow">
                             <p class="text-sm text-[#1a1a1a]/60">Total pedidos</p>
                             <p class="text-2xl font-bold text-[#1a1a1a] mt-1">{{ orders.length }}</p>
                         </div>
-                        <div class="bg-[#FEFDDF] p-5 rounded-lg shadow">
+                        <div class="bg-white p-5 rounded-lg shadow">
                             <p class="text-sm text-[#1a1a1a]/60">Gasto total</p>
                             <p class="text-2xl font-bold text-[#E87F24] mt-1">{{ totalSpent }}€</p>
                         </div>
-                        <div class="bg-[#FEFDDF] p-5 rounded-lg shadow">
+                        <div class="bg-white p-5 rounded-lg shadow">
                             <p class="text-sm text-[#1a1a1a]/60">Último pedido</p>
                             <p class="text-2xl font-bold text-[#1a1a1a] mt-1">{{ orders.length ? new Date(orders[0].created_at).toLocaleDateString('es-ES') : '-' }}</p>
                         </div>
                     </div>
 
-                    <div v-for="order in orders" :key="order.id" class="bg-[#FEFDDF] rounded-lg shadow overflow-hidden">
+                    <div v-for="order in orders" :key="order.id" class="bg-white rounded-lg shadow overflow-hidden">
                         <div class="p-5 sm:p-6">
                             <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
                                 <div>
@@ -75,7 +75,7 @@ const statusLabels = {
 
                             <div class="divide-y divide-[#1a1a1a]/10">
                                 <div v-for="item in order.items" :key="item.id" class="flex items-center gap-3 py-2">
-                                    <img :src="item.instrument?.imagen || 'https://images.unsplash.com/photo-1510915361894-db8b64506d60?w=500'" :alt="item.instrument?.marca" class="w-12 h-12 object-cover rounded" />
+                                    <img :src="item.instrument?.imagen" :alt="item.instrument?.marca" class="w-12 h-12 object-cover rounded" />
                                     <div class="flex-1 min-w-0">
                                         <p class="text-sm font-medium text-[#1a1a1a] truncate">{{ item.instrument?.marca }} {{ item.instrument?.modelo }}</p>
                                         <p class="text-xs text-[#1a1a1a]/60">{{ item.cantidad }} ud. x {{ parseFloat(item.precio_unitario).toFixed(2) }}€</p>

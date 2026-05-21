@@ -15,6 +15,7 @@ class AdminUserSeeder extends Seeder
             'email' => 'admin@tunely.es',
             'password' => Hash::make('admin123'),
             'role' => 'admin',
+            'foto' => '/img/profiles/default.webp',
             'email_verified_at' => now(),
         ]);
     }
