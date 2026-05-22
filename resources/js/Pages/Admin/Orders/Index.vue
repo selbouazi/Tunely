@@ -1,10 +1,18 @@
 <script setup>
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { Head, Link } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 
-defineProps({
+const props = defineProps({
     orders: Array,
 });
+
+const form = useForm({});
+
+const deleteOrder = (order) => {
+    if (confirm(`¿Eliminar el pedido #${order.id} definitivamente? Esta acción no se puede deshacer.`)) {
+        form.delete(route('admin.pedidos.destroy', order.id));
+    }
+};
 </script>
 
 <template>
@@ -54,8 +62,9 @@ defineProps({
                             </span>
                         </td>
                         <td class="px-4 py-3 text-gray-500">{{ new Date(order.created_at).toLocaleDateString('es-ES') }}</td>
-                        <td class="px-4 py-3 text-right">
+                        <td class="px-4 py-3 text-right space-x-2 whitespace-nowrap">
                             <Link :href="route('admin.pedidos.show', order.id)" class="text-[#E87F24] hover:underline text-sm">Ver</Link>
+                            <button @click="deleteOrder(order)" class="text-red-500 hover:underline text-sm">Eliminar</button>
                         </td>
                     </tr>
                     <tr v-if="orders.length === 0">

@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\PendingComment;
 use App\Models\Rating;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -38,11 +39,21 @@ Route::get('/', function () {
         ];
     }
 
+    $topRated = Instrument::withAvg('ratings', 'rating')
+        ->withCount('ratings')
+        ->where('disponible', true)
+        ->where('stock', '>', 0)
+        ->having('ratings_avg_rating', '>', 0)
+        ->orderByDesc('ratings_avg_rating')
+        ->take(4)
+        ->get();
+
     return Inertia::render('Welcome', [
         'canLogin' => Route::has('login'),
         'canRegister' => Route::has('register'),
         'instruments' => $instruments,
         'carouselItems' => $carouselItems,
+        'topRated' => $topRated,
     ]);
 })->name('home');
 
@@ -218,6 +229,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->group(fu
     Route::get('/pedidos', [\App\Http\Controllers\OrderController::class, 'index'])->name('admin.pedidos.index');
     Route::get('/pedidos/{order}', [\App\Http\Controllers\OrderController::class, 'show'])->name('admin.pedidos.show');
     Route::patch('/pedidos/{order}/estado', [\App\Http\Controllers\OrderController::class, 'updateStatus'])->name('admin.pedidos.update-status');
+    Route::delete('/pedidos/{order}', [\App\Http\Controllers\OrderController::class, 'destroy'])->name('admin.pedidos.destroy');
 
     Route::get('/opiniones', [\App\Http\Controllers\RatingController::class, 'adminIndex'])->name('admin.opiniones.index');
     Route::delete('/opiniones/{rating}', [\App\Http\Controllers\RatingController::class, 'destroy'])->name('admin.opiniones.destroy');
@@ -245,6 +257,26 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::match(['patch', 'post'], '/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    Route::post('/api/pending-comments/skip/{order}', function (\App\Models\Order $order) {
+        \App\Models\PendingComment::where('user_id', auth()->id())
+            ->where('order_id', $order->id)
+            ->where('has_commented', false)
+            ->update(['has_commented' => true]);
+        return response()->json(['success' => true]);
+    })->name('api.pending-comments.skip');
+
+    Route::get('/api/top-rated', function () {
+        $top = Instrument::withAvg('ratings', 'rating')
+            ->withCount('ratings')
+            ->where('disponible', true)
+            ->where('stock', '>', 0)
+            ->having('ratings_avg_rating', '>', 0)
+            ->orderByDesc('ratings_avg_rating')
+            ->take(10)
+            ->get();
+        return response()->json($top);
+    })->name('api.top-rated');
 
     Route::get('/api/pending-comments', function () {
         if (auth()->user()->role === 'admin') {

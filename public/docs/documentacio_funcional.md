@@ -1,286 +1,301 @@
-# Documentació Funcional - Tunely
+# Documentación Funcional - Tunely
 
-**Projecte Transversal DAW2**  
-**Tenda online d'instruments musicals**  
-**Data:** Maig 2026
-
----
-
-## Índex
-
-1. [Activitat de l'empresa](#1-activitat-de-lempresa)
-2. [Guia d'estils i imatge corporativa](#2-guia-destils-i-imatge-corporativa)
-3. [Estructura del lloc web](#3-estructura-del-lloc-web)
-4. [Funcionalitats per al client](#4-funcionalitats-per-al-client)
-5. [Funcionalitats per a l'administrador](#5-funcionalitats-per-a-ladministrador)
+**Proyecto Transversal DAW2**
+**Tienda online de instrumentos musicales**
+**Fecha:** Mayo 2026
 
 ---
 
-## 1. Activitat de l'empresa
+## Índice
+
+1. [Actividad de la empresa](#1-actividad-de-la-empresa)
+2. [Guía de estilos e imagen corporativa](#2-guía-de-estilos-e-imagen-corporativa)
+3. [Estructura del sitio web](#3-estructura-del-sitio-web)
+4. [Funcionalidades para el cliente](#4-funcionalidades-para-el-cliente)
+5. [Funcionalidades para el administrador](#5-funcionalidades-para-el-administrador)
+
+---
+
+## 1. Actividad de la empresa
 
 ### a) Marca comercial
 
-- **Nom comercial:** Tunely
-- **Eslògan:** "Tu tienda de instrumentos musicales"
-- **Activitat:** Venda online d'instruments musicals, nous i de segona mà.
-- **Perspectives de futur:** Mercat nacional amb possibilitat d'expansió internacional. Més de 10 anys d'experiència i 500 instruments venuts.
-- **Xarxes socials:** Perfils disponibles a Instagram, Facebook i TikTok (@tunely).
+- **Nombre comercial:** Tunely
+- **Eslogan:** "Tu tienda de instrumentos musicales"
+- **Actividad:** Venta online de instrumentos musicales, nuevos y de segunda mano.
+- **Perspectivas de futuro:** Mercado nacional con posibilidad de expansión internacional. Más de 10 años de experiencia y 500 instrumentos vendidos.
+- **Redes sociales:** Perfiles disponibles en Instagram, Facebook y TikTok (@tunely). Enlaces en el footer de la web.
 
-### b) Domini web
+### b) Dominio web
 
-- **Domini escollit:** `tunely.es`
-- **Estat:** Disponible (comprovat en data de realització del projecte).
-
-[CAPTURA: comprovacio_domini_disponible.png]
+- **Dominio elegido:** `tunely.es`
+- **Estado:** Disponible (comprobado en fecha de realización del proyecto).
 
 ---
 
-## 2. Guia d'estils i imatge corporativa
+## 2. Guía de estilos e imagen corporativa
 
-### a) Paleta de colors
+### a) Paleta de colores
 
-| Color | Codi HEX | Ús |
-|-------|----------|-----|
-| Crema | `#FEFDDF` | Fons principal de la web |
-| Taronja | `#E87F24` | Botons, accents, preus |
-| Blau | `#73A5CA` | Barra de navegació, footer |
-| Fosc | `#1a1a1a` | Textos principals |
-| Groc | `#FFC81E` | Hover botons, accents secundaris |
+| Color | Código HEX | Uso |
+|-------|-----------|-----|
+| Crema | `#FEFDDF` | Fondo principal de la web |
+| Naranja | `#E87F24` | Botones, acentos, precios |
+| Azul | `#73A5CA` | Barra de navegación, footer |
+| Oscuro | `#1a1a1a` | Textos principales |
+| Amarillo | `#FFC81E` | Hover botones, acentos secundarios |
 
-[CAPTURA: paleta_colors.png]
+### b) Tipografía
 
-### b) Tipografia
+- **Fuente principal:** system-ui, sans-serif (nativa del sistema para maximizar rendimiento).
+- **Pesos utilizados:** normal (400), medium (500), bold (700).
+- **Sin fuentes 3D ni decorativas** para garantizar tiempos de carga mínimos.
 
-- **Font principal:** system-ui, sans-serif (nativa del sistema per maximitzar rendiment).
-- **Pesos utilitzats:** normal (400), medium (500), bold (700).
-- **Sense fonts 3D ni decoratives** per garantir temps de càrrega mínims.
+### c) Logotipo
 
-### c) Logotip
-
-- **Versió principal:** `/img/tunely_logo.png`
-- **Versió nav:** `/img/tunely_logo2.png` (més gran per a la capçalera).
-
-[CAPTURA: logo_tunely.png]
+- **Versión principal:** `/img/tunely_logo.png`
+- **Versión nav:** `/img/tunely_logo2.png` (más grande para la cabecera).
 
 ---
 
-## 3. Estructura del lloc web
+## 3. Estructura del sitio web
 
 ### Layouts
 
-L'aplicació utilitza tres layouts principals:
+La aplicación utiliza tres layouts principales:
 
-1. **AppLayout** — Per a pàgines públiques: Inici, Catàleg, Qui som, Contacte, FAQ, Aviso Legal, Privacitat, Condicions.
-2. **AuthenticatedLayout** — Per a pàgines d'usuari autenticat: Dashboard (Mis Pedidos), Perfil.
-3. **AdminLayout** — Per al panell d'administració.
+1. **AppLayout** — Para páginas públicas: Inicio, Catálogo, Quiénes Somos, Contacto, FAQ, Aviso Legal, Privacidad, Condiciones.
+2. **AuthenticatedLayout** — Para páginas de usuario autenticado: Dashboard (Mis Pedidos), Perfil.
+3. **AdminLayout** — Para el panel de administración.
 
-### Wireframes
+### Mapa del sitio
 
-#### Portada (Homepage)
-
-[CAPTURA: wireframe_homepage.png]
-
-- Capçalera amb logo + navegació + carret
-- Secció hero (presentació + CTA)
-- Productes destacats
-- Footer amb enllaços legals
-
-#### Catàleg
-
-[CAPTURA: wireframe_catalogo.png]
-
-- Filtre per categories
-- Graella de productes (imatge, nom, preu, stock, botons)
-- Paginació (quan calgui)
-
-#### Detall de producte
-
-[CAPTURA: wireframe_producte.png]
-
-- Imatge gran
-- Informació: marca, model, preu, tipus, stock
-- Valoracions amb estrelles + comentaris
-- Formulari de valoració (si ha comprat)
-- Botó "Añadir al carrito"
-
-#### Checkout
-
-[CAPTURA: wireframe_checkout.png]
-
-- Llistat d'articles del carret
-- Formulari d'enviament
-- Formulari de facturació (checkbox "mateixa adreça")
-- Dades de targeta fictícia
-- Resum de compra + botó confirmar
-
-#### Dashboard client (Mis Pedidos)
-
-[CAPTURA: wireframe_mis_pedidos.png]
-
-- Targetes de resum (total pedidos, gasto total, último pedido)
-- Llistat de comandes amb estat i detalls
-
-#### Admin Dashboard
-
-[CAPTURA: wireframe_admin_dashboard.png]
-
-- Targetes de resum (productes, pedidos, usuaris, categories)
-- Gràfic de barres canvas (productes més venuts)
+```
+Inicio (/)
+├── Catálogo (/catalogo)
+│   └── Detalle producto (/catalogo/{id})
+├── Quiénes Somos (/quien-somos)
+├── FAQ (/faq)
+├── Contacto (/contacto)
+├── Aviso Legal (/aviso-legal)
+├── Privacidad (/privacidad)
+├── Condiciones (/condiciones)
+├── Mis Valoraciones (/mis-valoraciones)
+├── Dashboard (/dashboard) → Mis pedidos
+├── Perfil (/profile)
+├── Checkout (/checkout)
+│   └── Confirmación (/checkout/success/{order})
+└── Admin (/admin/dashboard)
+    ├── Productos (/admin/productos)
+    ├── Categorías (/admin/categorias)
+    ├── Subcategorías (/admin/subcategorias)
+    ├── Pedidos (/admin/pedidos)
+    ├── Opiniones (/admin/opiniones)
+    ├── Mensajes (/admin/mensajes)
+    ├── Usuarios (/admin/usuarios)
+    └── Descuento general (/admin/descuento-general)
+```
 
 ---
 
-## 4. Funcionalitats per al client
+## 4. Funcionalidades para el cliente
 
-### 4.1 Registre d'usuari
+### 4.1 Registro de usuario
 
-El formulari de registre compleix els següents requisits:
+El formulario de registro cumple los siguientes requisitos:
 
-- **Nom i cognoms:** Mínim 1 nom i 1 cognom, màxim 2 noms i 2 cognoms. Sense números ni caràcters especials. La primera lletra de cada mot es converteix a majúscula automàticament.
-- **Data de naixement:** Validació de major de 18 anys i menor de 100.
-- **Telèfon:** Amb codi internacional.
-- **Direcció d'enviament:** Patró vàlid (carrer, número, ciutat, província, CP).
-- **Direcció de facturació:** Opció "mateixa que l'enviament".
-- **Camps extra:** Instrument preferit, nivell d'experiència.
-- **Email:** Validació de format i únic.
-- **Contrasenya:** Mínim 8 caràcters, majúscules, minúscules i números. Confirmació. Indicador de fortalesa amb `<meter>`.
-- **Validació visual:** Canvi de color al focus/blur, indicador verd/vermell quan els camps són vàlids/invàlids.
+| Campo | Validación |
+|-------|-----------|
+| Nombre | Mínimo 1 nombre. Sin números ni caracteres especiales. Auto-capitaliza primera letra. Indicador visual verde/rojo. |
+| Primer apellido | Sin números ni caracteres especiales. Auto-capitaliza. |
+| Segundo apellido | Opcional. Sin números ni caracteres especiales. |
+| Fecha de nacimiento | Formato DD/MM/AAAA con máscara automática. Mayor de 18 años y menor de 100. |
+| Teléfono | Con código internacional (+34, +1, etc.). Formato libre. |
+| Dirección envío | Calle, número, ciudad, provincia, código postal (5 dígitos). |
+| Dirección facturación | Checkbox "La misma que la de envío". Si se desmarca, campos separados. |
+| Instrumento preferido | Selector desplegable (Guitarra, Bajo, Batería, Teclado, Viento, Indiferente). |
+| Nivel de experiencia | Selector (Principiante, Intermedio, Avanzado, Profesional). |
+| Email | Formato email válido. Único en BD. |
+| Contraseña | Mínimo 8 caracteres. Fortaleza medida con `<meter>` (Débil/Media/Fuerte). Confirmación requerida. |
+| Indicadores visuales | Focus: anillo naranja. Válido: borde verde. Error: borde rojo. |
 
-[CAPTURA: formulari_registre.png]
-[CAPTURA: validacio_password_meter.png]
-[CAPTURA: errors_validacio.png]
+**Comportamiento:**
+- Todos los campos obligatorios tienen asterisco `*`.
+- El botón "Registrarse" solo se habilita cuando el formulario es válido.
+- Muestra spinner "Registrando..." durante el envío.
+- Los indicadores visuales (verde) solo aparecen después de que el usuario sale del campo (evento blur).
 
-### 4.2 Inici de sessió
+### 4.2 Inicio de sesión
 
-- Formulari email + contrasenya.
-- Enllaç a registre per a usuaris nous.
-- Recordatori de valoracions pendents mitjançant crida AJAX en carregar la pàgina.
+- Formulario email + contraseña.
+- Enlace a registro para usuarios nuevos.
+- Recordatorio de valoraciones pendientes mediante llamada AJAX al cargar la página (banner amarillo en la parte superior).
 
-[CAPTURA: formulari_login.png]
+### 4.3 Carrito de compra
 
-### 4.3 Carret de compra
+- Funciona sin necesidad de estar logueado.
+- Almacenamiento en LocalStorage (persistente entre sesiones y cierres de navegador).
+- Permite modificar cantidades (+/-) desde el propio carrito desplegable.
+- Permite eliminar productos individualmente o vaciar todo el carrito.
+- Muestra precio total por producto y total global del carrito.
+- Acceso directo al checkout.
+- Icono del carrito en la cabecera con contador de artículos (badge naranja).
 
-- Funciona sense necessitat d'estar loguejat.
-- Emmagatzematge a LocalStorage (persistent entre sessions).
-- Permet modificar quantitats (+/-).
-- Permet eliminar productes.
-- Mostra preu total per producte i total del carret.
-- Accés directe al checkout.
+### 4.4 Checkout (Finalizar compra)
 
-[CAPTURA: carret_compra.png]
+- Requiere inicio de sesión. Si no está logueado, redirige al login.
+- Muestra lista de artículos con precios antes de finalizar.
+- Recoge datos de envío: nombre, dirección, ciudad, provincia, código postal, teléfono.
+- Recoge datos de facturación con opción "misma dirección" (checkbox).
+- Campos ficticios de tarjeta: número (16 dígitos), caducidad (MM/AA), CVV (3 dígitos). Son solo visuales, no se almacenan en backend.
+- Valida stock en servidor antes de crear el pedido.
+- Crea el pedido (Order), las líneas (OrderItems), y los registros pendientes de valoración (PendingComment) en una transacción atómica.
+- Decrementa el stock automáticamente.
+- Redirige a página de confirmación.
 
-### 4.4 Checkout (Finalitzar compra)
+### 4.5 Página de confirmación (OrderSuccess)
 
-- Requereix inici de sessió.
-- Recull dades d'enviament: nom, adreça, ciutat, província, CP, telèfon.
-- Recull dades de facturació (opció "mateixa adreça").
-- Camp fictici de targeta: número (16 dígits), caducitat (MM/AA), CVV (3 dígits).
-- Valida stock al servidor abans de crear la comanda.
-- Crea Order + OrderItems + PendingComment.
-- Decrementa stock automàticament.
-- Redirigeix a pàgina de confirmació.
+- Muestra resumen completo del pedido: número, fecha, artículos, direcciones, total.
+- **Opciones post-compra para valorar cada producto:**
+  - Botón "Valorar [producto]" → enlaza al detalle del producto para dejar valoración.
+  - Botón "No valorar" → llama a la API para marcar como comentado permanentemente.
+  - Botón "Ahora no" → oculta localmente el banner (no afecta a BD).
+- Enlace "Seguir comprando" → vuelve al catálogo.
+- Enlace "Mis pedidos" → va al dashboard del usuario.
+- Al cargar la página, se limpia el carrito de localStorage.
 
-[CAPTURA: checkout_formulari.png]
-[CAPTURA: checkout_targeta.png]
-[CAPTURA: pagina_confirmacio.png]
+### 4.6 Catálogo y detalle de producto
 
-### 4.5 Catàleg i detall de producte
+- **Catálogo:** Listado de productos con imagen, marca, modelo, precio con IVA, tipo (nuevo/usado).
+  - Filtro por categoría (selector desplegable).
+  - Botón "Añadir" en cada producto.
+  - Productos sin stock NO aparecen en el catálogo público.
+- **Detalle del producto (`/catalogo/{id}`):**
+  - Imagen del producto.
+  - Información completa: marca, modelo, tipo, precio, descripción, IVA.
+  - Valoraciones con estrellas (media) + lista de comentarios de usuarios.
+  - Formulario de valoración (solo visible si el usuario ha comprado el producto).
+  - **Formulario de consulta:**
+    - Visible para todos los visitantes.
+    - Si el usuario está logueado: los campos nombre y email se ocultan (autorellenados).
+    - Si NO está logueado: muestra nombre y email.
+    - Textarea con límite de 150 caracteres (con contador).
+    - Botón "Enviar" solo visible cuando el formulario es válido.
+    - Spinner durante el envío.
 
-- Llistat de productes amb imatge, marca, model, preu, tipus, stock.
-- Filtre per categoria.
-- Pàgina de detall amb informació completa.
-- Valoracions amb mitjana d'estrelles i llistat de comentaris.
-- Formulari de valoració (només visible si l'usuari ha comprat el producte).
+### 4.7 Historial de pedidos (Mis Pedidos)
 
-[CAPTURA: catalogo_filtre.png]
-[CAPTURA: detall_producte_valoracions.png]
+- Targetas de resumen: total de pedidos, gasto total, último pedido.
+- Listado de todas las comandas del usuario.
+- Cada comanda muestra: ID, fecha, artículos (marca, modelo, cantidad, precio), total.
+- Estado con código de colores: Pendiente (amarillo), Pagado (verde), Enviado (azul), Entregado (gris), Cancelado (rojo).
 
-### 4.6 Historial de comandes (Mis Pedidos)
+### 4.8 Mis Valoraciones
 
-- Llistat de totes les comandes de l'usuari.
-- Targetes de resum: total pedidos, gasto total, últim pedido.
-- Cada comanda mostra: ID, data, articles, preus, estat (amb codi de colors).
-- Estats: Pendiente, Pagado, Enviado, Entregado, Cancelado.
+- Listado de valoraciones realizadas por el usuario.
+- Sección de productos pendientes de valorar con enlace directo al producto.
+- Muestra estrella, comentario, fecha y producto valorado.
 
-[CAPTURA: mis_pedidos.png]
+### 4.9 Formulario de contacto
 
-### 4.7 Formulari de contacte
+- Campos: nombre, email, asunto, mensaje.
+- Validación completa con errores inline.
+- Guarda el mensaje en la base de datos.
+- Muestra mensaje de confirmación en verde.
 
-- Camps: nom, email, assumpte, missatge.
-- Validació completa amb errors inline.
-- Guarda el missatge a la base de dades.
-- Mostra missatge de confirmació en verd.
+### 4.10 FAQ
 
-[CAPTURA: formulari_contacte.png]
+- Preguntas frecuentes cargadas desde la base de datos (tabla `faqs`).
+- Estilo acordeón (pregunta desplegable con animación).
 
-### 4.8 FAQ
+### 4.11 Quiénes Somos
 
-- Preguntes freqüents carregades des de la base de dades.
-- Estil acordió (pregunta desplegable).
+- Página de presentación de la empresa.
+- Video de presentación con subtítulos (`/video/videoMarketing.mp4` + VTT).
+- Sección de valores y misión de la empresa.
 
-[CAPTURA: faq.png]
+### 4.12 Redes sociales
+
+- Iconos de Instagram, Facebook y TikTok en el footer.
+- Enlaces a los perfiles oficiales (@tunely).
+- Efecto hover que cambia al color naranja corporativo.
 
 ---
 
-## 5. Funcionalitats per a l'administrador
+## 5. Funcionalidades para el administrador
 
 ### 5.1 Dashboard
 
-- Targetes de resum: total productes, pedidos, usuaris, categories.
-- Gràfic de barres (Canvas) amb els 10 productes més venuts.
+- **Targetas de resumen:** Total productos, pedidos, usuarios, categorías.
+- **Gráfico de barras (Canvas API):** Top 10 productos más vendidos.
+  - Implementado con Canvas API nativa de HTML5, sin librerías externas.
+  - Barras con degradado de color naranja a azul.
+- **Estado del descuento general:** Muestra si hay un descuento activo y cuántos productos afecta.
+- **Accesos directos:** Enlaces a todas las secciones de gestión.
 
-[CAPTURA: admin_dashboard.png]
-[CAPTURA: admin_grafic_canvas.png]
+### 5.2 Gestión de categorías
 
-### 5.2 Gestió de categories
+- Listado de categorías con nombre.
+- Modal para crear nueva categoría.
+- Modal para editar categoría existente.
+- Eliminación con confirmación.
+- Las categorías existentes: Guitarra, Bajo, Batería, Viento, Teclado, Percusión, Amplificación.
 
-- Llistat de categories amb modal per crear/editar.
-- Eliminació amb confirmació.
+### 5.3 Gestión de subcategorías
 
-[CAPTURA: admin_categories.png]
+- Asociadas a categorías mediante selector desplegable.
+- CRUD completo con modal.
+- Al cambiar la categoría, se filtran las subcategorías existentes.
 
-### 5.3 Gestió de subcategories
+### 5.4 Gestión de productos
 
-- Associades a categories mitjançant selector.
-- CRUD complet amb modal.
+- **Listado:** Tabla con imagen, marca, modelo, categoría, precio, stock, copias vendidas, disponible/sin stock.
+  - Productos sin stock aparecen en rojo con etiqueta "Agotado".
+  - Filtro por disponibilidad.
+  - Opción de ordenar por stock (clic en cabecera de columna).
+- **Crear/Editar producto:**
+  - Campos: marca, modelo, precio, tipo (nuevo/usado), stock, categoría, subcategoría, imagen (subida), descripción.
+  - Validación completa.
+- **Desactivar/Activar producto:** Botón que cambia el flag `disponible`.
+- **Descuento general:** Aplicar/Quitar descuento porcentual a todos los productos activos.
+  - Guarda el precio original para poder restaurarlo.
+  - Se ejecuta en una transacción atómica.
 
-[CAPTURA: admin_subcategories.png]
+### 5.5 Gestión de pedidos
 
-### 5.4 Gestió de productes
+- **Listado:** Todos los pedidos con ID, cliente, fecha, total, estado.
+- **Detalle del pedido:**
+  - Información del cliente.
+  - Artículos comprados (marca, modelo, cantidad, precio).
+  - Direcciones de envío y facturación.
+  - Historial de cambios de estado.
+- **Máquina de estados:**
+  - Pendiente → Pagado / Cancelado
+  - Pagado → Enviado / Cancelado
+  - Enviado → Entregado / Cancelado
+  - Entregado → (estado final)
+  - Cancelado → (estado final)
+  - Transiciones inválidas se rechazan con mensaje de error.
+- **Eliminar pedido:** Permite borrar pedidos completos.
 
-- Llistat amb filtre per disponibilitat.
-- Crear/editar producte: marca, modelo, precio, stock, categoria, subcategoria, imatge, descripció.
-- Desactivar/activar producte.
-- Descompte global (per percentatge) a tots els productes disponibles.
-- Control d'stock: productes amb stock=0 s'amaguen del catàleg.
+### 5.6 Gestión de opiniones
 
-[CAPTURA: admin_productes_llistat.png]
-[CAPTURA: admin_producte_formulari.png]
-[CAPTURA: admin_descompte_global.png]
+- Listado de todas las valoraciones de usuarios.
+- Muestra: usuario, producto, puntuación (estrellas), comentario, fecha.
+- Posibilidad de eliminar valoraciones inapropiadas.
 
-### 5.5 Gestió de comandes
+### 5.7 Gestión de usuarios
 
-- Llistat de totes les comandes amb estat i dates.
-- Detall de comanda: informació client, productes, adreces d'enviament/facturació.
-- Canvi d'estat amb màquina d'estats: pendiente → pagado → enviado → entregado (o cancelado en qualsevol punt no final).
+- Listado de usuarios con nombre, email, rol, fecha de registro.
+- Edición de rol (cliente ↔ admin).
+- Eliminación con confirmación.
 
-[CAPTURA: admin_comandes_llistat.png]
-[CAPTURA: admin_comanda_detall.png]
-[CAPTURA: admin_canvi_estat.png]
+### 5.8 Mensajes de contacto
 
-### 5.6 Gestió d'opinions
-
-- Llistat de valoracions d'usuaris.
-- Possibilitat d'eliminar valoracions indegudes.
-
-[CAPTURA: admin_opinions.png]
-
-### 5.7 Missatges de contacte
-
-- Llistat de consultes rebudes des del formulari de contacte.
-- Mostra nom, email, assumpte i missatge.
-
-[CAPTURA: admin_missatges.png]
+- Listado de consultas recibidas desde el formulario de contacto.
+- Muestra: nombre, email, asunto, mensaje, fecha.
+- Ordenados por fecha descendente.
 
 ---
 
-**Fi de la documentació funcional**
+**Fin de la documentación funcional**

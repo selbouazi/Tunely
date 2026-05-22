@@ -9,7 +9,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'update-quantity', 'remove-item', 'clear-cart']);
 
-const defaultImage = 'https://images.unsplash.com/photo-1510915361894-db8b64506d60?w=500';
+const defaultImage = '/img/carrusel/1.webp';
 
 const getItemTotal = (item) => {
     return (item.precio * item.quantity).toFixed(2);

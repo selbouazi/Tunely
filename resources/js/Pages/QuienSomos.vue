@@ -2,7 +2,7 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head } from '@inertiajs/vue3';
 
-const imgMusic = 'https://images.unsplash.com/photo-1510915361894-db8b64506d60?w=600';
+const imgMusic = '/img/carrusel/1.webp';
 const videoUrl = '/video/videoMarketing.mp4';
 </script>
 

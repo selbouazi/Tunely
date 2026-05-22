@@ -15,6 +15,8 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             FaqSeeder::class,
             ContactInfoSeeder::class,
+            DemoDataSeeder::class,
+            RatingSeeder::class,
         ]);
     }
 }

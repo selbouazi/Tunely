@@ -77,6 +77,10 @@ class InstrumentController extends Controller
             'disponible' => 'boolean',
         ]);
 
+        if (empty($validated['precio_original']) && (float) $validated['precio'] !== (float) $instrument->precio) {
+            $validated['precio_original'] = $instrument->precio;
+        }
+
         $validated['descuento_general_applied'] = false;
         $instrument->update($validated);
 

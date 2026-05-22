@@ -1,14 +1,17 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, useForm, usePage } from '@inertiajs/vue3';
 
 const props = defineProps({
     contactInfo: Array,
 });
 
+const user = usePage().props.auth?.user;
+const isLoggedIn = !!user;
+
 const form = useForm({
-    name: '',
-    email: '',
+    name: user?.name ?? '',
+    email: user?.email ?? '',
     subject: 'Consulta general',
     message: '',
 });
@@ -44,7 +47,7 @@ const getByType = (type) => {
                     <div>
                         <h2 class="text-xl font-bold mb-6 text-[#1a1a1a]">Envíanos un mensaje</h2>
                         <form @submit.prevent="submit" class="space-y-4">
-                            <div class="grid md:grid-cols-2 gap-4">
+                            <div v-if="!isLoggedIn" class="grid md:grid-cols-2 gap-4">
                                 <div>
                                     <input v-model="form.name" type="text" placeholder="Nombre" class="w-full bg-[#FEFDDF] border border-[#73A5CA] px-4 py-2 text-[#1a1a1a] focus:border-[#E87F24] outline-none">
                                     <p v-if="form.errors.name" class="text-red-600 text-xs mt-1">{{ form.errors.name }}</p>
@@ -52,6 +55,14 @@ const getByType = (type) => {
                                 <div>
                                     <input v-model="form.email" type="email" placeholder="Email" class="w-full bg-[#FEFDDF] border border-[#73A5CA] px-4 py-2 text-[#1a1a1a] focus:border-[#E87F24] outline-none">
                                     <p v-if="form.errors.email" class="text-red-600 text-xs mt-1">{{ form.errors.email }}</p>
+                                </div>
+                            </div>
+                            <div v-else class="grid md:grid-cols-2 gap-4">
+                                <div class="bg-[#FEFDDF] border border-[#73A5CA] px-4 py-2 text-[#1a1a1a]/70 text-sm rounded">
+                                    <strong>Nombre:</strong> {{ user.name }}
+                                </div>
+                                <div class="bg-[#FEFDDF] border border-[#73A5CA] px-4 py-2 text-[#1a1a1a]/70 text-sm rounded">
+                                    <strong>Email:</strong> {{ user.email }}
                                 </div>
                             </div>
                             <div>

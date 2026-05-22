@@ -9,16 +9,19 @@ const props = defineProps({
     canRate: Boolean,
 });
 
-const defaultImage = 'https://images.unsplash.com/photo-1510915361894-db8b64506d60?w=500';
+const defaultImage = '/img/carrusel/1.webp';
 
 const form = useForm({
     rating: 5,
     comment: '',
 });
 
+const user = usePage().props.auth?.user;
+const isLoggedIn = computed(() => !!user);
+
 const queryForm = useForm({
-    name: usePage().props.auth?.user?.name || '',
-    email: usePage().props.auth?.user?.email || '',
+    name: user?.name || '',
+    email: user?.email || '',
     message: '',
 });
 
@@ -141,14 +144,14 @@ const messageLength = computed(() => queryForm.message?.length || 0);
                         </div>
 
                         <form @submit.prevent="submitQuery" class="space-y-4">
-                            <div>
+                            <div v-if="!isLoggedIn">
                                 <label class="block text-sm font-medium text-[#1a1a1a] mb-1">Nombre *</label>
                                 <input v-model="queryForm.name" type="text"
                                     class="w-full border border-gray-300 px-3 py-2 rounded focus:ring-2 focus:ring-[#E87F24] focus:border-transparent"
                                     placeholder="Tu nombre">
                                 <p v-if="queryForm.errors.name" class="text-red-600 text-xs mt-1">{{ queryForm.errors.name }}</p>
                             </div>
-                            <div>
+                            <div v-if="!isLoggedIn">
                                 <label class="block text-sm font-medium text-[#1a1a1a] mb-1">Email *</label>
                                 <input v-model="queryForm.email" type="email"
                                     class="w-full border border-gray-300 px-3 py-2 rounded focus:ring-2 focus:ring-[#E87F24] focus:border-transparent"

@@ -1,92 +1,99 @@
-# Documentació Tècnica - Tunely
+# Documentación Técnica - Tunely
 
-**Projecte Transversal DAW2**  
-**Tenda online d'instruments musicals**  
-**Data:** Maig 2026
-
----
-
-## Índex
-
-1. [Arquitectura de l'aplicació](#1-arquitectura-de-laplicació)
-2. [Estructura de fitxers](#2-estructura-de-fitxers)
-3. [Base de dades](#3-base-de-dades)
-4. [Autenticació i rols](#4-autenticació-i-rols)
-5. [Catàleg de productes](#5-catàleg-de-productes)
-6. [Procés de compra](#6-procés-de-compra)
-7. [Sistema de valoracions](#7-sistema-de-valoracions)
-8. [Gràfic Canvas](#8-gràfic-canvas)
-9. [Tests](#9-tests)
-10. [Manual d'instal·lació](#10-manual-dinstal·lació)
+**Proyecto Transversal DAW2**
+**Tienda online de instrumentos musicales**
+**Stack:** Laravel 12 + Inertia + Vue 3 + Tailwind CSS 4
+**Fecha:** Mayo 2026
 
 ---
 
-## 1. Arquitectura de l'aplicació
+## Índice
 
-### Stack tecnològic
+1. [Arquitectura de la aplicación](#1-arquitectura-de-la-aplicación)
+2. [Estructura de archivos](#2-estructura-de-archivos)
+3. [Base de datos](#3-base-de-datos)
+4. [Autenticación y Usuarios](#4-autenticación-y-usuarios)
+5. [Catálogo de Instrumentos](#5-catálogo-de-instrumentos)
+6. [Proceso de compra (Carrito + Checkout)](#6-proceso-de-compra-carrito--checkout)
+7. [Sistema de Valoraciones](#7-sistema-de-valoraciones)
+8. [Sistema de Descuentos Generales](#8-sistema-de-descuentos-generales)
+9. [Dashboard de Administrador](#9-dashboard-de-administrador)
+10. [CRUD de Instrumentos](#10-crud-de-instrumentos)
+11. [Gráfico Canvas](#11-gráfico-canvas)
+12. [Seeders](#12-seeders)
+13. [Manual de instalación](#13-manual-de-instalación)
 
-- **Backend:** Laravel 11 (PHP 8.2+)
-- **Frontend:** Vue 3 + Inertia.js + Tailwind CSS
-- **Base de dades:** SQLite (desenvolupament) / MySQL (producció)
-- **Node.js:** 20.x per compilació d'assets Vite
-- **Autenticació:** Laravel Breeze (Inertia + Vue)
+---
 
-### Patró arquitectònic
+## 1. Arquitectura de la aplicación
 
-L'aplicació segueix el patró MVC de Laravel amb Inertia.js com a pont entre backend i frontend:
+### Stack tecnológico
+
+| Capa | Tecnología | Versión |
+|------|-----------|---------|
+| Backend | Laravel | ^12.0 |
+| Frontend | Vue 3 + Inertia | ^3.5 / ^2.0 |
+| CSS | Tailwind CSS | ^4.0 |
+| Base de datos | SQLite (dev) / MySQL (prod) | - |
+| Autenticación | Laravel Breeze (Inertia + Vue) | ^2.x |
+| Build | Vite | ^7.3 |
+| Rutas JS | Ziggy | ^2.0 |
+
+### Flujo de datos Inertia
 
 ```
-Petició HTTP → Ruta (web.php) → Middleware → Controller
-  → Eloquent Model (DB) → Inertia::render() → Vue Page Component
-  → Usuari interactua → useForm → POST/GET → Controller
+Petición HTTP → Route (web.php) → Middleware → Controller/Closure
+  → Eloquent Model (BD) → Inertia::render('Componente', { props })
+  → Inertia devuelve JSON con nombre del componente + props
+  → Vue renderiza el componente SIN recargar la página
+  → Usuario interactúa → useForm → POST/PUT/DELETE → Controller
+  → Controller valida + procesa → redirect con flash messages
+  → Inertia re-renderiza la nueva página
 ```
 
-El flux d'Inertia:
+**Justificación técnica:** Inertia permite construir una SPA sin necesidad de API REST ni Vue Router. Cada ruta Laravel se asigna a un componente Vue. El servidor renderiza la página completa (SSR-ready) y las navegaciones posteriores son AJAX. Esto simplifica la autenticación (cookies/session, no JWT) y elimina la duplicación de lógica de rutas.
 
-1. El Controller retorna `Inertia::render('Pagina', { props })`
-2. Inertia envia JSON al frontend
-3. Vue renderitza el component sense recarregar la pàgina
-4. Formularis amb `useForm()` fan peticions Inertia (POST/PUT/DELETE)
-5. El servidor retorna redirect amb flash messages
+### Middleware destacado
 
-### Middleware destacat
+| Middleware | Propósito | Registro en |
+|-----------|-----------|-------------|
+| `HandleInertiaRequests` | Comparte datos globales con Inertia (user, flash messages) | `bootstrap/app.php` |
+| `CheckRole` | Verifica si el usuario tiene el rol requerido | `bootstrap/app.php` (alias `role`) |
+| `auth` | Verifica sesión activa | Laravel Breeze |
+| `verified` | Verifica email confirmado | Laravel Breeze |
 
-- **HandleInertiaRequests:** Comparteix globalment `auth.user`, `flash.success`, `flash.error`, `cartCount`.
-- **RoleMiddleware:** Redirigeix usuaris no admin a `/dashboard`.
-- **CartMiddleware:** Calcula quants articles hi ha al carret via encadenament Inertia.
+### Roles de usuario
 
-[CAPTURA: arquitectura_inertia.png]
+| Rol | Acceso | Asignación |
+|-----|--------|------------|
+| `admin` | Panel de administración completo | Manual (seeder o edición desde admin) |
+| `client` | Compra, perfil, historial, valoraciones | Automático (registro) |
 
 ---
 
-## 2. Estructura de fitxers
+## 2. Estructura de archivos
 
 ```
 Tunely/
 ├── app/
 │   ├── Http/
 │   │   ├── Controllers/
-│   │   │   ├── Auth/                  # Controladors Breeze
-│   │   │   ├── Admin/
-│   │   │   │   ├── CategoryController.php
-│   │   │   │   ├── DashboardController.php
-│   │   │   │   ├── InstrumentoController.php
-│   │   │   │   ├── OrderController.php
-│   │   │   │   ├── RatingController.php
-│   │   │   │   └── SubcategoryController.php
-│   │   │   ├── CheckoutController.php
-│   │   │   ├── ContactController.php
-│   │   │   ├── InstrumentoController.php   # Catàleg públic
-│   │   │   ├── RatingController.php         # Valoracions usuari
-│   │   │   └── ProfileController.php         # Perfil usuari
-│   │   ├── Middleware/
-│   │   │   └── RoleMiddleware.php
-│   │   └── Requests/
-│   │       ├── CheckoutRequest.php
-│   │       └── ProfileUpdateRequest.php
+│   │   │   ├── Auth/                       # Controladores Breeze
+│   │   │   ├── CheckoutController.php      # Procesa pedidos
+│   │   │   ├── ContactController.php       # Formulario contacto
+│   │   │   ├── GeneralDiscountController.php # Descuentos generales
+│   │   │   ├── OrderController.php         # Gestión pedidos admin
+│   │   │   ├── ProfileController.php       # Perfil usuario
+│   │   │   ├── RatingController.php         # Valoraciones
+│   │   │   ├── UserController.php           # Gestión usuarios admin
+│   │   │   ├── CategoryController.php       # CRUD categorías
+│   │   │   ├── SubcategoryController.php    # CRUD subcategorías
+│   │   │   └── InstrumentController.php     # CRUD instrumentos
+│   │   └── Middleware/
+│   │       └── CheckRole.php               # Middleware de roles
 │   ├── Models/
 │   │   ├── User.php
-│   │   ├── Instrumento.php
+│   │   ├── Instrument.php
 │   │   ├── Category.php
 │   │   ├── Subcategory.php
 │   │   ├── Order.php
@@ -94,349 +101,746 @@ Tunely/
 │   │   ├── Rating.php
 │   │   ├── PendingComment.php
 │   │   ├── ContactMessage.php
+│   │   ├── ContactInfo.php
 │   │   ├── Faq.php
-│   │   └── ContactInfo.php
+│   │   └── GeneralDiscount.php
 │   └── Providers/
 │       └── AppServiceProvider.php
 ├── database/
-│   └── migrations/
-│       ├── 0001_01_01_000000_create_users_table.php
-│       ├── 0001_01_01_000001_create_cache_table.php
-│       ├── 0001_01_01_000002_create_jobs_table.php
-│       ├── 2026_05_14_create_categories_table.php
-│       ├── 2026_05_14_create_instrumentos_table.php
-│       ├── 2026_05_14_add_role_to_users_table.php
-│       ├── 2026_05_15_create_faqs_table.php
-│       ├── 2026_05_15_create_contact_info_table.php
-│       ├── 2026_05_17_create_orders_table.php
-│       ├── 2026_05_17_create_order_items_table.php
-│       ├── 2026_05_17_create_pending_comments_table.php
-│       ├── 2026_05_17_create_ratings_table.php
-│       ├── 2026_05_19_create_subcategories_table.php
-│       ├── 2026_05_19_add_subcategory_id_to_instrumentos.php
-│       ├── 2026_05_19_create_contact_messages_table.php
-│       └── 2026_05_19_122325_add_shipping_fields_to_orders_table.php
+│   ├── migrations/                         # 16 migraciones
+│   └── seeders/
+│       ├── DatabaseSeeder.php
+│       ├── AdminUserSeeder.php
+│       ├── CategorySeeder.php
+│       ├── SubcategorySeeder.php
+│       └── InstrumentSeeder.php
 ├── resources/
 │   ├── js/
-│   │   ├── Components/          # Subcomponents Vue (Logo, CartDrawer, etc.)
-│   │   ├── Layouts/             # AppLayout, AuthenticatedLayout, AdminLayout
-│   │   └── Pages/               # Pàgines Inertia
-│   │       ├── Admin/           # CRUD administració
-│   │       └── *vue             # Pàgines públiques i usuari
+│   │   ├── Components/                     # Componentes reutilizables
+│   │   │   ├── CartDrawer.vue              # Drawer carrito
+│   │   │   ├── ProductCarousel.vue         # Carrusel portada
+│   │   │   ├── TextInput.vue               # Input estilizado
+│   │   │   └── InputError.vue              # Mensaje error
+│   │   ├── Layouts/
+│   │   │   ├── AppLayout.vue               # Layout público
+│   │   │   ├── AdminLayout.vue             # Layout admin
+│   │   │   ├── GuestLayout.vue             # Layout auth
+│   │   │   └── AuthenticatedLayout.vue     # Layout usuario
+│   │   └── Pages/
+│   │       ├── Auth/                       # Login, Register
+│   │       ├── Profile/                    # Editar perfil
+│   │       ├── Admin/                      # Panel admin
+│   │       │   ├── Dashboard.vue           # Estadísticas
+│   │       │   ├── Instruments/            # CRUD productos
+│   │       │   ├── Categories/             # CRUD categorías
+│   │       │   ├── Subcategories/          # CRUD subcategorías
+│   │       │   └── ...                     # Orders, Ratings, etc.
+│   │       ├── Welcome.vue                 # Portada
+│   │       ├── Catalogo.vue                # Catálogo público
+│   │       ├── InstrumentoDetalle.vue      # Detalle producto
+│   │       ├── Checkout.vue                # Finalizar compra
+│   │       ├── OrderSuccess.vue            # Confirmación pedido
+│   │       ├── Dashboard.vue               # Mis pedidos
+│   │       ├── MisValoraciones.vue         # Mis valoraciones
+│   │       ├── QuienSomos.vue              # Página presentación
+│   │       ├── Contacto.vue                # Formulario contacto
+│   │       ├── FAQ.vue                     # Preguntas frecuentes
+│   │       ├── AvisoLegal.vue              # Aviso legal
+│   │       ├── Privacidad.vue              # Política privacidad
+│   │       └── Condiciones.vue             # Condiciones envío
 │   └── views/
-│       └── app.blade.php        # Template principal Inertia
+│       └── app.blade.php                   # Layout raíz Inertia
 ├── public/
-│   ├── img/                     # Logos i imatges
-│   ├── video/                   # Vídeo presentació + subtítols
-│   └── docs/                    # Documents de documentació
+│   ├── img/
+│   │   ├── carrusel/                       # 5 imágenes .webp
+│   │   ├── profiles/                       # Fotos de perfil
+│   │   ├── productos/                      # Imágenes de productos
+│   │   └── tunely_logo.png                # Logotipo
+│   ├── video/
+│   │   ├── videoMarketing.mp4             # Video presentación
+│   │   └── presentacion.vtt               # Subtítulos
+│   └── docs/                              # Documentación
 ├── routes/
-│   ├── web.php                  # Totes les rutes web
-│   └── api.php                  # Ruta AJAX pending-comments
+│   ├── web.php                            # Todas las rutas web
+│   └── auth.php                           # Rutas de autenticación Breeze
 └── tests/
-    └── Feature/
-        ├── CheckoutTest.php
-        ├── ContactTest.php
-        ├── FaqTest.php
-        ├── InstrumentoTest.php
-        ├── OrderAdminTest.php
-        ├── ProfileTest.php
-        └── RatingTest.php
+    └── Feature/                           # Tests (si existen)
 ```
 
 ---
 
-## 3. Base de dades
+## 3. Base de datos
 
-### Diagrama entitat-relació
+### Diagrama entidad-relación (tablas)
 
-[CAPTURA: diagrama_er.png]
+```
+users ──1:N──> orders ──1:N──> order_items ──N:1──> instruments
+  │                 │
+  │                 └──> pending_comments
+  │                       │
+  └──> ratings ────N:1──┘
+  │
+  └──> contact_messages
 
-### Taules principals
+categories ──1:N──> subcategories ──1:N──> instruments
+```
 
-#### `users`
+### Tabla `users`
 
-| Camp | Tipus | Descripció |
-|------|-------|------------|
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
 | id | integer PK | |
-| name | string(255) | Nom complet |
-| email | string(255) | Email únic |
-| password | string(255) | Bcrypt |
-| role | string(20) | 'admin' o 'client' |
-| phone | string(50) | Telèfon |
-| phone_country | string(10) | Prefix internacional |
-| birth_date | date | Data de naixement |
-| shipping_address | text | Adreça enviament |
-| billing_address | text | Adreça facturació |
-| preferred_instrument | string | Instrument preferit |
-| experience_level | string | Principiant, Intermig, Avançat |
-| newsletter | boolean | Subscripció |
+| name | string(255) | Nombre |
+| surname | string(255) | Primer apellido |
+| second_surname | string(255) nullable | Segundo apellido |
+| email | string(255) unique | Email |
+| password | string(255) | Bcrypt hashed |
+| role | string(20) default 'client' | admin / client |
+| fecha_nacimiento | date | Fecha nacimiento |
+| telefono | string(50) | Teléfono |
+| direccion | text | Dirección envío |
+| ciudad | string(100) | |
+| provincia | string(100) | |
+| codigo_postal | string(10) | |
+| mismo_direccion_facturacion | boolean | |
+| direccion_facturacion | text nullable | |
+| ciudad_facturacion | string(100) nullable | |
+| provincia_facturacion | string(100) nullable | |
+| codigo_postal_facturacion | string(10) nullable | |
+| instrumento_preferido | string(100) nullable | |
+| nivel_experiencia | string(50) nullable | |
+| foto | string(255) nullable | Ruta foto perfil |
+| email_verified_at | timestamp nullable | |
+| remember_token | string(100) nullable | |
 
-#### `instrumentos`
+### Tabla `instruments`
 
-| Camp | Tipus | Descripció |
-|------|-------|------------|
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
 | id | integer PK | |
-| marca | string | Marca del fabricant |
-| modelo | string | Model de l'instrument |
-| tipo | string | Vent, corda, percussió |
-| precio | decimal(10,2) | Preu unitari |
-| stock | integer | Unitats disponibles |
-| descripcion | text | Descripció detallada |
-| imagen | string | Path de la imatge |
-| category_id | integer FK | Categoria pare |
-| subcategory_id | integer FK nullable | Subcategoria |
-| disponible | boolean | Visible al catàleg |
+| marca | string(255) | Marca del fabricante |
+| modelo | string(255) | Modelo |
+| tipo | string(50) | 'nuevo' o 'usado' |
+| precio | decimal(10,2) | Precio base (sin IVA) |
+| precio_original | decimal(10,2) nullable | Precio antes de descuento |
+| stock | integer | Unidades disponibles |
+| descripcion | text nullable | Descripción detallada |
+| imagen | string(255) nullable | Ruta de la imagen |
+| disponibilidad | string(50) default 'disponible' | Estado |
+| category_id | integer FK | Categoría |
+| subcategory_id | integer FK nullable | Subcategoría |
+| disponible | boolean default true | Visible en catálogo |
+| descuento_general_applied | boolean default false | Afectado por descuento general |
+| created_at | timestamp | |
+| updated_at | timestamp | |
 
-#### `categories`
+**Accessors:**
+```php
+public function getPrecioConIvaAttribute()
+{
+    return round($this->precio * 1.21, 2);
+}
+```
+El atributo `precio_con_iva` se incluye automáticamente en las respuestas gracias a `$appends = ['precio_con_iva']`.
 
-| Camp | Tipus |
-|------|-------|
+### Tabla `categories`
+
+| Campo | Tipo |
+|-------|------|
 | id | integer PK |
 | nombre | string(100) |
-| slug | string(100) |
+| created_at | timestamp |
+| updated_at | timestamp |
 
-#### `subcategories`
+### Tabla `subcategories`
 
-| Camp | Tipus |
-|------|-------|
+| Campo | Tipo |
+|-------|------|
 | id | integer PK |
 | nombre | string(100) |
-| slug | string(100) |
 | category_id | integer FK |
+| created_at | timestamp |
+| updated_at | timestamp |
 
-#### `orders`
+### Tabla `orders`
 
-| Camp | Tipus | Descripció |
-|------|-------|------------|
-| id | integer PK | Número de comanda |
-| user_id | integer FK | Client |
-| total | decimal(10,2) | Total |
-| status | string | Pendiente/Pagado/Enviado/Entregado/Cancelado |
-| shipping_name | string | Nom destinatari |
-| shipping_address | text | Carrer |
-| shipping_city | string | Ciutat |
-| shipping_province | string | Província |
-| shipping_postal_code | string | CP |
-| shipping_phone | string | Telèfon |
-| billing_name | string | Nom facturació |
-| billing_address | text | Carrer facturació |
-| billing_city | string | Ciutat facturació |
-| billing_province | string | Província facturació |
-| billing_postal_code | string | CP facturació |
+| Campo | Tipo | Descripción |
+|-------|------|-------------|
+| id | integer PK | Número de pedido |
+| user_id | integer FK | Cliente |
+| total | decimal(10,2) | Total del pedido |
+| estado | string(50) | Pendiente/Pagado/Enviado/Entregado/Cancelado |
+| shipping_name | string(255) | Nombre destinatario |
+| shipping_address | text | Dirección envío |
+| shipping_city | string(100) | |
+| shipping_province | string(100) | |
+| shipping_postal_code | string(10) | |
+| shipping_phone | string(50) | |
+| billing_same_as_shipping | boolean | |
+| billing_name | string(255) nullable | |
+| billing_address | text nullable | |
+| billing_city | string(100) nullable | |
+| billing_province | string(100) nullable | |
+| billing_postal_code | string(10) nullable | |
+| created_at | timestamp | |
+| updated_at | timestamp | |
 
-#### `order_items`
+### Tabla `order_items`
 
-| Camp | Tipus |
-|------|-------|
+| Campo | Tipo |
+|-------|------|
 | id | integer PK |
 | order_id | integer FK |
-| instrumento_id | integer FK |
-| quantity | integer |
-| price | decimal(10,2) |
+| instrument_id | integer FK |
+| cantidad | integer |
+| precio_unitario | decimal(10,2) |
 
-#### `ratings`
+### Tabla `ratings`
 
-| Camp | Tipus |
-|------|-------|
+| Campo | Tipo |
+|-------|------|
 | id | integer PK |
 | user_id | integer FK |
-| instrumento_id | integer FK |
+| instrument_id | integer FK |
 | rating | integer (1-5) |
-| comentario | text |
-| *unique* | (user_id, instrumento_id) |
+| comment | text nullable |
+| created_at | timestamp |
+| *unique* | (user_id, instrument_id) |
 
-#### `pending_comments`
+### Tabla `pending_comments`
 
-| Camp | Tipus |
-|------|-------|
+| Campo | Tipo |
+|-------|------|
 | id | integer PK |
 | user_id | integer FK |
-| instrumento_id | integer FK |
+| instrument_id | integer FK |
+| order_id | integer FK nullable |
+| has_commented | boolean default false |
 | created_at | timestamp |
-
-#### `faqs`, `contact_info`, `contact_messages`
-
-Taules auxiliars.
 
 ### SQLite vs MySQL
 
-En desenvolupament s'usa SQLite per simplicitat. Migrar a MySQL implica canviar `DB_CONNECTION=mysql` al `.env` i ajustar alguns tipus (p. ex. `text` per adreces).
-
-[CAPTURA: estructura_bd.png]
+En desarrollo se usa SQLite por simplicidad (archivo `database/database.sqlite`). Migrar a MySQL implica cambiar `DB_CONNECTION=mysql` en `.env` y crear la base de datos. Las migraciones son compatibles con ambos motores.
 
 ---
 
-## 4. Autenticació i rols
+## 4. Autenticación y Usuarios
 
-### Registre amb camps extra
+### 4.1 Registro
 
-El `RegisteredUserController` s'ha modificat per incloure tots els camps definits a la migració `users`:
+**Archivos:**
+- `app/Http/Controllers/Auth/RegisteredUserController.php`
+- `resources/js/Pages/Auth/Register.vue`
+- `routes/auth.php`
+
+**Validación backend:**
 
 ```php
-// app/Http/Controllers/Auth/RegisteredUserController.php
 $request->validate([
-    'name' => ['required', 'string', 'max:255', 'regex:/^[a-zA-ZÀ-ÿ\s]+$/'],
-    'email' => ['required', 'string', 'email', 'max:255', 'unique:'.User::class],
-    'password' => ['required', 'confirmed', Rules\Password::defaults()],
-    'birth_date' => ['required', 'date', 'before:100 years ago', 'after:18 years ago'],
-    'phone' => ['required', 'string', 'max:20'],
-    'shipping_address' => ['required', 'string', 'max:500'],
-    'preferred_instrument' => ['nullable', 'string', 'max:100'],
-    'experience_level' => ['nullable', 'string', 'in:Principiante,Intermedio,Avanzado'],
+    'nombre' => 'required|string|max:255|regex:/^[\pL\s]+$/u',
+    'apellido1' => 'required|string|max:255|regex:/^[\pL\s]+$/u',
+    'fecha_nacimiento' => 'required|date|before:' . now()->subYears(18)->format('Y-m-d') . '|after:' . now()->subYears(100)->format('Y-m-d'),
+    'telefono' => 'required|string|max:20',
+    'email' => 'required|string|email|max:255|unique:' . User::class,
+    'password' => 'required|string|min:8|confirmed',
 ]);
 ```
 
-### RoleMiddleware
+**Máscara de fecha DD/MM/AAAA (frontend):**
+
+```javascript
+const onFechaInput = (e) => {
+    const raw = e.target.value;
+    const digits = raw.replace(/\D/g, '').slice(0, 8);
+    let formatted = '';
+    if (digits.length > 0) formatted = digits.slice(0, 2);
+    if (digits.length > 2) formatted += '/' + digits.slice(2, 4);
+    if (digits.length > 4) formatted += '/' + digits.slice(4, 8);
+    fechaDisplay.value = formatted;
+    if (digits.length === 8) {
+        form.fecha_nacimiento = `${digits.slice(4,8)}-${digits.slice(2,4)}-${digits.slice(0,2)}`;
+    }
+};
+```
+
+Se usa un `<input>` nativo (no `TextInput`) porque el componente `TextInput` usa `defineModel` que interferiría con el control manual del valor. El input muestra DD/MM/AAAA pero internamente `form.fecha_nacimiento` se guarda como YYYY-MM-DD (ISO 8601) para compatibilidad con la base de datos.
+
+**Indicador de fortaleza de contraseña:**
+
+```javascript
+const passwordStrength = computed(() => {
+    const p = form.password;
+    if (!p) return 0;
+    let score = 0;
+    if (p.length >= 8) score++;
+    if (p.length >= 12) score++;
+    if (/[a-z]/.test(p) && /[A-Z]/.test(p)) score++;
+    if (/\d/.test(p)) score++;
+    if (/[^a-zA-Z0-9]/.test(p)) score++;
+    return score;
+});
+```
+
+Se muestra con `<meter :value="passwordStrength" min="0" max="5">` y etiqueta de texto (Débil/Media/Fuerte).
+
+**Indicadores visuales foco/blur/válido:**
+
+```javascript
+const fieldClass = (field, hasValue) => {
+    const classes = [];
+    if (focusedField.value === field) classes.push('ring-2 ring-[#E87F24]');
+    if (form.errors[field]) classes.push('border-red-500 ring-1 ring-red-500');
+    else if (touchedFields.value[field] && hasValue) classes.push('border-green-500');
+    return classes.join(' ');
+};
+```
+
+**Justificación:** Tres estados visuales diferenciados: foco (anillo naranja), error (borde rojo), válido (borde verde). El verde solo se aplica tras perder el foco (`touchedFields`), evitando marcar campos no tocados.
+
+### 4.2 Roles y Middleware
+
+**Middleware `CheckRole`:**
 
 ```php
-class RoleMiddleware
+class CheckRole
 {
     public function handle(Request $request, Closure $next, string $role): Response
     {
         if (! $request->user() || $request->user()->role !== $role) {
-            return redirect('/dashboard');
+            abort(403);
         }
         return $next($request);
     }
 }
 ```
 
-### Rutes admin
+**Registro en `bootstrap/app.php`:**
 
 ```php
-// routes/web.php
-Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', [Admin\DashboardController::class, 'index'])->name('dashboard');
-    Route::resource('/productos', Admin\InstrumentoController::class);
-    Route::resource('/categorias', Admin\CategoryController::class);
-    Route::resource('/subcategorias', Admin\SubcategoryController::class);
-    Route::get('/pedidos', [Admin\OrderController::class, 'index'])->name('orders.index');
-    Route::get('/pedidos/{order}', [Admin\OrderController::class, 'show'])->name('orders.show');
-    Route::patch('/pedidos/{order}/status', [Admin\OrderController::class, 'updateStatus'])->name('orders.updateStatus');
-    Route::post('/bulk-discount', [Admin\InstrumentoController::class, 'bulkDiscount'])->name('bulk-discount');
-    Route::get('/opiniones', [Admin\RatingController::class, 'index'])->name('ratings.index');
-    Route::delete('/opiniones/{rating}', [Admin\RatingController::class, 'destroy'])->name('ratings.destroy');
-    Route::get('/mensajes', [Admin\ContactMessageController::class, 'index'])->name('messages.index');
+->withMiddleware(function (Middleware $middleware) {
+    $middleware->alias([
+        'role' => \App\Http\Middleware\CheckRole::class,
+    ]);
+})
+```
+
+**Uso en rutas:**
+
+```php
+Route::middleware(['auth', 'verified', 'role:admin'])->prefix('admin')->group(function () {
+    // ...
 });
 ```
 
-[CAPTURA: rutes_admin.png]
+**Justificación:** Preferimos middleware a policies porque cada usuario tiene exactamente un rol. El middleware intercepta antes del controlador, lo que es más eficiente que verificar permisos en cada método.
 
----
-
-## 5. Catàleg de productes
-
-### InstrumentoController (públic)
+### 4.3 Edición de perfil y foto
 
 ```php
-class InstrumentoController extends Controller
+public function update(Request $request)
 {
-    public function index(Request $request)
-    {
-        $query = Instrumento::with('category', 'subcategory')
-            ->where('disponible', true)->where('stock', '>', 0);
-
-        if ($request->filled('category')) {
-            $query->whereHas('category', fn($q) => $q->where('slug', $request->category));
+    $user = $request->user();
+    if ($request->hasFile('foto')) {
+        // Eliminar foto anterior
+        if ($user->foto && Storage::disk('public')->exists($user->foto)) {
+            Storage::disk('public')->delete($user->foto);
         }
-
-        $instrumentos = $query->paginate(12);
-        $categorias = Category::all();
-
-        return Inertia::render('Instrumentos/Index', [
-            'instrumentos' => $instrumentos,
-            'categorias' => $categorias,
-            'filters' => $request->only('category'),
-        ]);
+        $path = $request->file('foto')->store('profiles', 'public');
+        $user->foto = $path;
     }
-
-    public function show(Instrumento $instrumento)
-    {
-        $instrumento->load('category', 'subcategory', 'ratings.user');
-        $userRating = auth()->check()
-            ? $instrumento->ratings->firstWhere('user_id', auth()->id())
-            : null;
-        $canRate = auth()->check() && PendingComment::where('user_id', auth()->id())
-            ->where('instrumento_id', $instrumento->id)->exists();
-
-        return Inertia::render('Instrumentos/Detalle', [
-            'instrumento' => $instrumento,
-            'userRating' => $userRating,
-            'canRate' => $canRate,
-        ]);
-    }
+    $user->save();
 }
 ```
 
-### Filtrat per categoria
-
-El filtrat es fa passant `?category=slug` a la URL. Inertia manté l'estat del filtre.
-
-[CAPTURA: catalogo_categoria.png]
-
-### Descompte global
-
-```php
-public function bulkDiscount(Request $request)
-{
-    $request->validate(['percent' => 'required|numeric|min:1|max:99']);
-    $count = Instrumento::where('disponible', true)->where('stock', '>', 0)->count();
-    Instrumento::where('disponible', true)->where('stock', '>', 0)
-        ->update(['precio' => DB::raw("precio * (1 - {$request->percent} / 100)")]);
-    return redirect()->back()->with('success', "Descuento del {$request->percent}% aplicado a {$count} productos.");
-}
-```
+Las imágenes se almacenan en `storage/app/public/profiles/` y se sirven desde `/storage/profiles/` mediante el enlace simbólico de Laravel.
 
 ---
 
-## 6. Procés de compra
+## 5. Catálogo de Instrumentos
 
-### CheckoutController
+### 5.1 Listado público
+
+**Archivo:** `routes/web.php` (closure en ruta `/catalogo`)
 
 ```php
-class CheckoutController extends Controller
+Route::get('/catalogo', function () {
+    $instruments = Instrument::with('category')
+        ->where('disponible', true)
+        ->where('stock', '>', 0)
+        ->get();
+    $categories = Category::all();
+    return Inertia::render('Catalogo', [
+        'instruments' => $instruments,
+        'categories' => $categories,
+    ]);
+})->name('catalogo');
+```
+
+**Filtro por categoría (frontend):**
+
+```javascript
+const selectedCategory = ref(null);
+const filteredInstruments = computed(() => {
+    if (!selectedCategory.value) return instruments;
+    return instruments.filter(i => i.category_id === selectedCategory.value);
+});
+```
+
+**Justificación:** El filtro es local (client-side) porque el catálogo tiene solo ~31 productos. Para catálogos grandes se haría server-side con query params y paginación.
+
+### 5.2 Detalle de producto
+
+**Ruta:**
+
+```php
+Route::get('/catalogo/{id}', function ($id) {
+    $instrument = Instrument::with('category', 'ratings.user')->findOrFail($id);
+    // ...
+    return Inertia::render('InstrumentoDetalle', [
+        'instrument' => $instrument,
+        'userRating' => $userRating,
+        'canRate' => $canRate,
+    ]);
+})->name('instrumento.detalle');
+```
+
+### 5.3 Formulario de consulta de producto
+
+**Archivo:** `resources/js/Pages/InstrumentoDetalle.vue`
+
+El formulario de consulta se adapta según el estado de autenticación:
+
+```vue
+<div v-if="!isLoggedIn">
+    <TextInput v-model="queryForm.name" placeholder="Nombre *" />
+    <TextInput v-model="queryForm.email" placeholder="Email *" />
+</div>
+<textarea v-model="queryForm.message" maxlength="150"></textarea>
+<button v-if="queryValid && !form.processing" @click="submitQuery">Enviar consulta</button>
+```
+
+El botón de envío solo aparece cuando `queryValid` es true (nombre, email y mensaje completos). Cuando el usuario está logueado, `queryForm.name` y `queryForm.email` se rellenan automáticamente desde `$page.props.auth.user`.
+
+---
+
+## 6. Proceso de compra (Carrito + Checkout)
+
+### 6.1 Carrito con localStorage
+
+**Archivo:** `resources/js/Layouts/AppLayout.vue`
+
+```javascript
+const STORAGE_KEY = 'tunely_cart';
+
+const loadCart = () => {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) cart.value = JSON.parse(stored);
+};
+
+const addToCart = (product) => {
+    const existing = cart.value.find(item => item.id === product.id);
+    if (existing) {
+        existing.quantity += 1;
+    } else {
+        cart.value.push({ id, marca, modelo, precio, imagen, quantity: 1 });
+    }
+    saveCart();
+};
+```
+
+**Evento personalizado:** Se usa `window.dispatchEvent(new CustomEvent('add-to-cart', { detail: instrument }))` para que cualquier componente pueda añadir al carrito, incluso si está anidado profundamente. `AppLayout` escucha el evento y procesa la adición.
+
+### 6.2 Checkout
+
+**Archivos:**
+- `app/Http/Controllers/CheckoutController.php`
+- `resources/js/Pages/Checkout.vue`
+
+**Controlador:**
+
+```php
+public function store(Request $request)
+{
+    $cart = json_decode($request->cart, true);
+    if (empty($cart)) return back()->with('error', 'El carrito está vacío');
+
+    DB::transaction(function () use ($cart, &$order) {
+        $total = 0;
+        $items = [];
+        foreach ($cart as $item) {
+            $product = Instrument::findOrFail($item['id']);
+            $total += $product->precio * $item['quantity'];
+            $items[] = new OrderItem([
+                'instrument_id' => $product->id,
+                'cantidad' => $item['quantity'],
+                'precio_unitario' => $product->precio,
+            ]);
+            $product->decrement('stock', $item['quantity']);
+        }
+        $order = Order::create([...]);
+        $order->items()->saveMany($items);
+        // Crear PendingComment para cada producto
+    });
+    // ...
+}
+```
+
+**Justificación:** El stock se decrementa al crear el pedido, no al añadir al carrito. Esto es intencional: el carrito es local al navegador y no está sincronizado con el servidor. Si dos usuarios tienen el mismo producto en su carrito, el stock se descuenta cuando el primero finaliza la compra.
+
+### 6.3 Página de confirmación (OrderSuccess)
+
+**Archivo:** `resources/js/Pages/OrderSuccess.vue`
+
+Muestra el resumen del pedido y las opciones de valoración post-compra:
+
+```vue
+<div v-if="!ratingDismissed && !isAdmin">
+    <Link v-for="item in order.items" :href="'/catalogo/' + item.instrument_id">
+        Valorar {{ item.instrument.marca }} {{ item.instrument.modelo }}
+    </Link>
+    <button @click="skipRating">No valorar</button>
+    <button @click="dismissRating">Ahora no</button>
+</div>
+```
+
+- **Valorar:** Enlaza al detalle del producto para dejar valoración.
+- **No valorar:** Llama a `POST /api/pending-comments/skip/{order}` que marca todos los `PendingComment` del pedido como `has_commented = true`.
+- **Ahora no:** Solo oculta el banner localmente (no afecta a BD).
+
+Al cargar la página, se ejecuta `localStorage.removeItem('tunely_cart')` para limpiar el carrito.
+
+---
+
+## 7. Sistema de Valoraciones
+
+### 7.1 Creación de valoración
+
+**Archivo:** `app/Http/Controllers/RatingController.php`
+
+```php
+public function store(Request $request, Instrument $instrument): RedirectResponse
+{
+    $validated = $request->validate([
+        'rating' => 'required|integer|min:1|max:5',
+        'comment' => 'nullable|string|max:1000',
+    ]);
+
+    $existing = Rating::where('user_id', auth()->id())
+        ->where('instrument_id', $instrument->id)
+        ->first();
+
+    if ($existing) {
+        return back()->withErrors(['rating' => 'Ya has valorado este instrumento']);
+    }
+
+    $rating = Rating::create([
+        'user_id' => auth()->id(),
+        'instrument_id' => $instrument->id,
+        'rating' => $validated['rating'],
+        'comment' => $validated['comment'] ?? null,
+    ]);
+
+    // Marcar pending_comment como completado
+    PendingComment::where('user_id', auth()->id())
+        ->where('instrument_id', $instrument->id)
+        ->where('has_commented', false)
+        ->update(['has_commented' => true]);
+
+    return back()->with('success', 'Valoración enviada correctamente');
+}
+```
+
+**Unique constraint:** La migración `ratings` tiene `$table->unique(['user_id', 'instrument_id'])` para que un usuario solo pueda valorar un producto una vez. El controlador también verifica antes de crear.
+
+### 7.2 Recordatorio AJAX
+
+**Archivo:** `resources/js/Layouts/AppLayout.vue` (onMounted)
+
+```javascript
+fetch(route('api.pending-comments'))
+    .then(r => r.json())
+    .then(data => {
+        pendingCount.value = data.count;
+        pendingItems.value = data.items;
+    });
+```
+
+La ruta está en `web.php` (grupo `auth`):
+
+```php
+Route::get('/api/pending-comments', function () {
+    $pending = PendingComment::with('instrument')
+        ->where('user_id', auth()->id())
+        ->where('has_commented', false)
+        ->get();
+    return response()->json([
+        'count' => $pending->count(),
+        'items' => $pending,
+    ]);
+})->name('api.pending-comments');
+```
+
+**Justificación:** Se usa `fetch()` nativo en lugar de Inertia porque es una llamada API ligera que devuelve JSON. No necesita renderizar una página completa.
+
+### 7.3 Endpoint getRating (API)
+
+```php
+Route::get('/api/top-rated', function () {
+    $top = Instrument::withAvg('ratings', 'rating')
+        ->withCount('ratings')
+        ->where('disponible', true)
+        ->where('stock', '>', 0)
+        ->having('ratings_avg_rating', '>', 0)
+        ->orderByDesc('ratings_avg_rating')
+        ->take(10)
+        ->get();
+    return response()->json($top);
+})->name('api.top-rated');
+```
+
+Sección "Mejor valorados" en la portada (`Welcome.vue`) que muestra 4 productos con sus estrellas y contador.
+
+---
+
+## 8. Sistema de Descuentos Generales
+
+### 8.1 Aplicar descuento
+
+**Archivo:** `app/Http/Controllers/GeneralDiscountController.php`
+
+```php
+public function apply(Request $request)
+{
+    $validated = $request->validate([
+        'porcentaje' => 'required|numeric|min:1|max:100',
+        'nombre' => 'required|string|max:255',
+    ]);
+
+    DB::transaction(function () use ($validated) {
+        GeneralDiscount::create([
+            'nombre' => $validated['nombre'],
+            'porcentaje' => $validated['porcentaje'],
+            'activo' => true,
+        ]);
+
+        Instrument::whereNotNull('id')->each(function ($instrument) use ($validated) {
+            $instrument->update([
+                'precio_original' => $instrument->precio,
+                'precio' => round($instrument->precio * (1 - $validated['porcentaje'] / 100), 2),
+                'descuento_general_applied' => true,
+            ]);
+        });
+    });
+
+    return back()->with('success', 'Descuento aplicado correctamente');
+}
+```
+
+**Quitar descuento:**
+
+```php
+public function remove()
+{
+    DB::transaction(function () {
+        Instrument::where('descuento_general_applied', true)->each(function ($instrument) {
+            $instrument->update([
+                'precio' => $instrument->precio_original,
+                'precio_original' => null,
+                'descuento_general_applied' => false,
+            ]);
+        });
+        GeneralDiscount::where('activo', true)->update(['activo' => false]);
+    });
+}
+```
+
+**Justificación:** Se usa `DB::transaction` para atomicidad. Se guarda `precio_original` para poder restaurar precios sin necesidad de almacenar el porcentaje de descuento en cada producto.
+
+---
+
+## 9. Dashboard de Administrador
+
+**Archivo:** `routes/web.php` (closure en ruta `/admin/dashboard`)
+
+Los datos agregados se obtienen con Eloquent:
+
+```php
+$topProducts = OrderItem::selectRaw('instrument_id, SUM(cantidad) as total_vendido')
+    ->whereHas('order', fn($q) => $q->where('estado', '!=', 'cancelado'))
+    ->groupBy('instrument_id')
+    ->orderByDesc('total_vendido')
+    ->take(10)
+    ->with('instrument')
+    ->get()
+    ->map(fn($item) => [
+        'label' => $item->instrument->marca . ' ' . $item->instrument->modelo,
+        'value' => (int) $item->total_vendido,
+    ]);
+```
+
+**Justificación:** Usamos closures en rutas (no controladores dedicados) para estas operaciones simples porque son consultas directas a la BD que devuelven datos agregados. No hay lógica de negocio que justifique un controlador separado.
+
+---
+
+## 10. CRUD de Instrumentos
+
+### 10.1 Controller
+
+**Archivo:** `app/Http/Controllers/InstrumentController.php`
+
+```php
+class InstrumentController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Checkout', [
-            'cartItems' => session('cart', []),
+        $instruments = Instrument::with('category', 'subcategory')
+            ->withCount('orderItems')
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return Inertia::render('Admin/Instruments/Index', [
+            'instruments' => $instruments,
         ]);
     }
 
-    public function store(CheckoutRequest $request)
+    public function store(Request $request)
     {
-        $cart = session('cart', []);
-        if (empty($cart)) return redirect()->back()->with('error', 'El carrito está vacío.');
+        $validated = $request->validate([
+            'marca' => 'required|string|max:255',
+            'modelo' => 'required|string|max:255',
+            'precio' => 'required|numeric|min:0',
+            'tipo' => 'required|in:nuevo,usado',
+            'stock' => 'required|integer|min:0',
+            'category_id' => 'required|exists:categories,id',
+            'subcategory_id' => 'nullable|exists:subcategories,id',
+            'imagen' => 'nullable|image|max:2048',
+            'descripcion' => 'nullable|string',
+        ]);
 
-        DB::transaction(function () use ($request, $cart, &$order) {
-            $total = 0;
-            foreach ($cart as $item) {
-                $producto = Instrumento::findOrFail($item['id']);
-                if ($producto->stock < $item['quantity']) throw new \Exception("Stock insuficiente");
-                $total += $producto->precio * $item['quantity'];
-            }
+        if ($request->hasFile('imagen')) {
+            $validated['imagen'] = $request->file('imagen')->store('productos', 'public');
+        }
 
-            $data = $request->validated();
-            $order = Order::create([...$data, 'user_id' => auth()->id(), 'total' => $total, 'status' => 'Pendiente']);
-
-            foreach ($cart as $item) {
-                $producto = Instrumento::findOrFail($item['id']);
-                OrderItem::create(['order_id' => $order->id, 'instrumento_id' => $producto->id, 'quantity' => $item['quantity'], 'price' => $producto->precio]);
-                PendingComment::create(['user_id' => auth()->id(), 'instrumento_id' => $producto->id]);
-                $producto->decrement('stock', $item['quantity']);
-            }
-        });
-
-        session()->forget('cart');
-        return redirect()->route('orders.success', $order);
+        Instrument::create($validated);
+        return redirect()->route('admin.instrumentos.index')
+            ->with('success', 'Producto creado correctamente');
     }
 }
 ```
 
-### Màquina d'estats
+### 10.2 Subcategorías dependientes
+
+El selector de subcategorías se filtra según la categoría seleccionada:
+
+```javascript
+const filteredSubcategories = computed(() => {
+    return subcategories.filter(s => s.category_id === form.category_id);
+});
+```
+
+### 10.3 Máquina de estados de pedidos
 
 ```php
-// Admin/OrderController.php
 private const VALID_TRANSITIONS = [
     'Pendiente' => ['Pagado', 'Cancelado'],
     'Pagado'    => ['Enviado', 'Cancelado'],
@@ -447,292 +851,147 @@ private const VALID_TRANSITIONS = [
 
 public function updateStatus(Request $request, Order $order)
 {
-    $request->validate(['status' => 'required|string|in:Pagado,Enviado,Entregado,Cancelado']);
-    if (!in_array($request->status, self::VALID_TRANSITIONS[$order->status] ?? [])) {
-        return redirect()->back()->with('error', 'Transición de estado no válida.');
+    $request->validate(['estado' => 'required|string']);
+    $newStatus = $request->estado;
+    if (!in_array($newStatus, self::VALID_TRANSITIONS[$order->estado] ?? [])) {
+        return back()->with('error', 'Transición de estado no válida');
     }
-    $order->update(['status' => $request->status]);
-    return redirect()->back()->with('success', 'Estado actualizado correctamente.');
+    $order->update(['estado' => $newStatus]);
+    return back()->with('success', 'Estado actualizado');
 }
 ```
 
-### CheckoutRequest (validació)
-
-```php
-class CheckoutRequest extends FormRequest
-{
-    public function rules(): array
-    {
-        return [
-            'shipping_name' => 'required|string|max:255',
-            'shipping_address' => 'required|string|max:500',
-            'shipping_city' => 'required|string|max:100',
-            'shipping_province' => 'required|string|max:100',
-            'shipping_postal_code' => 'required|string|size:5',
-            'shipping_phone' => 'required|string|max:20',
-            'same_as_shipping' => 'boolean',
-            'billing_name' => 'required_if:same_as_shipping,false|string|max:255',
-            'billing_address' => 'required_if:same_as_shipping,false|string|max:500',
-            'billing_city' => 'required_if:same_as_shipping,false|string|max:100',
-            'billing_province' => 'required_if:same_as_shipping,false|string|max:100',
-            'billing_postal_code' => 'required_if:same_as_shipping,false|string|size:5',
-            'card_number' => 'required|string|size:16',
-            'card_expiry' => 'required|string|size:5',
-            'card_cvv' => 'required|string|size:3',
-        ];
-    }
-}
-```
-
-[CAPTURA: checkout_validacio.png]
-
-### Carret (LocalStorage)
-
-El carret no requereix sessió al servidor. S'emmagatzema a `localStorage` del navegador i es passa via Inertia share:
-
-```js
-// AppLayout.vue
-const cart = ref(JSON.parse(localStorage.getItem('cart') || '[]'));
-const cartCount = computed(() => cart.value.reduce((sum, item) => sum + item.quantity, 0));
-```
-
-[CAPTURA: carret_desplegable.png]
+**Justificación:** La máquina de estados evita transiciones inválidas (ej: pasar de "Pendiente" a "Entregado" directamente). Es un patrón de diseño que garantiza la integridad del flujo de trabajo.
 
 ---
 
-## 7. Sistema de valoracions
+## 11. Gráfico Canvas
 
-### Creació de valoració
+### 11.1 Frontend (Canvas API nativa)
 
-```php
-// RatingController.php (usuari)
-public function store(Request $request)
-{
-    $request->validate([
-        'instrumento_id' => 'required|exists:instrumentos,id',
-        'rating' => 'required|integer|min:1|max:5',
-        'comentario' => 'nullable|string|max:1000',
-    ]);
+```javascript
+const drawChart = (canvasId, data) => {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    const max = Math.max(...data.map(d => d.value), 1);
+    const barWidth = Math.min(40, (canvas.width - 60) / data.length / 2);
 
-    $existing = PendingComment::where('user_id', auth()->id())
-        ->where('instrumento_id', $request->instrumento_id)->first();
-    if (!$existing) return redirect()->back()->with('error', 'No puedes valorar este producto.');
+    data.forEach((item, i) => {
+        const barHeight = (item.value / max) * (canvas.height - 40);
+        const x = 30 + i * (barWidth * 2 + 10);
+        const y = canvas.height - 20 - barHeight;
 
-    Rating::updateOrCreate(
-        ['user_id' => auth()->id(), 'instrumento_id' => $request->instrumento_id],
-        ['rating' => $request->rating, 'comentario' => $request->comentario]
-    );
+        const gradient = ctx.createLinearGradient(x, y, x, y + barHeight);
+        gradient.addColorStop(0, '#E87F24');
+        gradient.addColorStop(1, '#73A5CA');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(x, y, barWidth, barHeight);
 
-    $existing->delete();
-    return redirect()->back()->with('success', 'Valoración guardada.');
-}
+        // Etiqueta del producto (rotada 45°)
+        ctx.save();
+        ctx.translate(x + barWidth / 2, canvas.height - 10);
+        ctx.rotate(-Math.PI / 4);
+        ctx.fillStyle = '#1a1a1a';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(item.label, 0, 0);
+        ctx.restore();
+    });
+};
 ```
 
-### Recordatori AJAX
-
-```js
-// AppLayout.vue - al mount()
-fetch('/api/pending-comments')
-  .then(res => res.json())
-  .then(data => {
-    if (data.length > 0) {
-      pendingCount.value = data.length;
-      showBanner.value = true;
-    }
-  });
-```
-
-[CAPTURA: banner_valoracions_pendents.png]
-
-### Admin gestió valoracions
-
-L'admin pot llistar i eliminar valoracions indegudes.
-
-[CAPTURA: admin_opinions.png]
-
-### Unique constraint
-
-`$table->unique(['user_id', 'instrumento_id'])` — un usuari només pot valorar un cop cada producte.
+**Justificación:** No se usa Chart.js ni ninguna librería externa porque el enunciado requiere explícitamente la API Canvas de HTML5. Esto demuestra conocimiento de la API nativa de dibujo del navegador.
 
 ---
 
-## 8. Gràfic Canvas
+## 12. Seeders
 
-### Backend (DashboardController)
-
-```php
-public function index()
-{
-    $topProducts = OrderItem::select('instrumento_id',
-        DB::raw('SUM(quantity) as total_vendido'),
-        DB::raw('SUM(order_items.price * quantity) as total_ingresos'))
-        ->groupBy('instrumento_id')
-        ->orderByDesc('total_vendido')
-        ->take(10)
-        ->with('instrumento')
-        ->get();
-
-    return Inertia::render('Admin/Dashboard', [
-        'stats' => [...],
-        'topProducts' => $topProducts,
-    ]);
-}
-```
-
-### Frontend (Canvas JS pur)
-
-```vue
-<canvas ref="chartCanvas" width="600" height="300"></canvas>
-
-<script setup>
-import { ref, onMounted } from 'vue';
-const chartCanvas = ref(null);
-
-onMounted(() => {
-  const canvas = chartCanvas.value;
-  const ctx = canvas.getContext('2d');
-  const products = props.topProducts;
-  const max = Math.max(...products.map(p => p.total_vendido));
-
-  products.forEach((p, i) => {
-    const barHeight = (p.total_vendido / max) * 250;
-    const x = 40 + i * 55;
-    const y = 270 - barHeight;
-
-    const gradient = ctx.createLinearGradient(x, y, x, 270);
-    gradient.addColorStop(0, '#E87F24');
-    gradient.addColorStop(1, '#73A5CA');
-    ctx.fillStyle = gradient;
-    ctx.fillRect(x, y, 40, barHeight);
-  });
-});
-</script>
-```
-
-[CAPTURA: grafic_canvas.png]
-
----
-
-## 9. Tests
-
-### Suite de tests (43 tests, 162 assertions)
-
-Tots els tests usen `RefreshDatabase` i `assertInertia` per verificar respostes Inertia.
-
-| Test Fitxer | Assertions | Descripció |
-|-------------|-----------|------------|
-| CheckoutTest | | Procés de compra complet, validació, stock |
-| ContactTest | | Enviament i recepció de missatges |
-| FaqTest | | FAQ carreguen des de DB |
-| InstrumentoTest | | Catàleg, filtrat, detall |
-| OrderAdminTest | | CRUD comandes, màquina d'estats |
-| ProfileTest | | Actualització perfil |
-| RatingTest | | Valoracions, unique, admin |
-| **Total** | **162** | |
-
-### Exemple de test
-
-```php
-class CheckoutTest extends TestCase
-{
-    use RefreshDatabase;
-
-    public function test_user_can_complete_checkout()
-    {
-        $user = User::factory()->create(['role' => 'client']);
-        $product = Instrumento::factory()->create(['stock' => 5, 'precio' => 100]);
-
-        session(['cart' => [['id' => $product->id, 'quantity' => 2]]]);
-
-        $response = $this->actingAs($user)->post(route('checkout.store'), [
-            'shipping_name' => 'Test User',
-            'shipping_address' => 'Carrer Test 123',
-            'shipping_city' => 'Barcelona',
-            'shipping_province' => 'Barcelona',
-            'shipping_postal_code' => '08001',
-            'shipping_phone' => '+34 600 000 000',
-            'same_as_shipping' => true,
-            'card_number' => '1234567890123456',
-            'card_expiry' => '12/28',
-            'card_cvv' => '123',
-        ]);
-
-        $response->assertRedirect(route('orders.success', Order::first()));
-        $this->assertEquals(3, $product->fresh()->stock);
-        $this->assertDatabaseHas('orders', ['user_id' => $user->id, 'total' => 200]);
-    }
-}
-```
-
-[CAPTURA: tests_passing.png]
-
-### Execució
+### 12.1 Ejecución
 
 ```bash
-# Executar tots els tests
-php artisan test
-
-# Executar un fitxer concret
-php artisan test tests/Feature/CheckoutTest.php
+php artisan migrate --seed
+# o individualmente:
+php artisan db:seed --class=AdminUserSeeder
 ```
+
+### 12.2 Seeders disponibles
+
+| Seeder | Archivo | Datos que crea |
+|--------|---------|----------------|
+| `AdminUserSeeder` | `database/seeders/AdminUserSeeder.php` | 1 admin + 2 clientes |
+| `CategorySeeder` | `database/seeders/CategorySeeder.php` | 7 categorías |
+| `SubcategorySeeder` | `database/seeders/SubcategorySeeder.php` | Subcategorías por categoría |
+| `InstrumentSeeder` | `database/seeders/InstrumentSeeder.php` | 31 instrumentos |
+
+### 12.3 Usuarios por defecto
+
+| Rol | Email | Contraseña |
+|-----|-------|-----------|
+| Admin | `admin@tunely.com` | `12341234` |
+| Client | `client@tunely.com` | `12341234` |
+| Client | `client2@tunely.com` | `12341234` |
+
+### 12.4 Categorías por defecto
+
+1. Guitarras
+2. Bajos
+3. Baterías
+4. Viento
+5. Teclados
+6. Percusión
+7. Amplificación
 
 ---
 
-## 10. Manual d'instal·lació
+## 13. Manual de instalación
 
-### Requisits
+### Requisitos
 
 - PHP 8.2+
 - Composer 2.x
-- Node.js 20.x + npm
-- SQLite (inclòs a PHP)
+- Node.js 20+ + npm
+- SQLite (incluido en PHP) o MySQL
 
-### Passos
+### Pasos
 
 ```bash
-# 1. Clonar repositori
-git clone <url-repositori>
+# 1. Clonar repositorio
+git clone <url-repositorio>
 cd Tunely
 
-# 2. Instal·lar dependències PHP
+# 2. Instalar dependencias PHP
 composer install
 
-# 3. Instal·lar dependències Node.js
+# 3. Instalar dependencias Node.js
 npm install
 
-# 4. Copiar .env i generar key
+# 4. Copiar .env y generar key
 copy .env.example .env
 php artisan key:generate
 
-# 5. Configurar .env (per defecte SQLite funciona sense canvis)
-# DB_CONNECTION=sqlite
+# 5. (Opcional) Configurar .env para MySQL
+# DB_CONNECTION=mysql
+# DB_HOST=127.0.0.1
+# DB_PORT=3306
+# DB_DATABASE=tunely
+# DB_USERNAME=root
+# DB_PASSWORD=
 
-# 6. Crear base de dades SQLite
-# (tocar database/database.sqlite o deixar que la migració el cree)
-
-# 7. Migrar i poblar DB
+# 6. Migrar y poblar BD
 php artisan migrate --seed
 
-# 8. Compilar assets
+# 7. Compilar assets
 npm run build
 
-# 9. Enllaçar storage
+# 8. Enlazar storage (para imágenes subidas)
 php artisan storage:link
 
-# 10. Servidor de desenvolupament
+# 9. Iniciar servidor de desarrollo
 php artisan serve
 # http://localhost:8000
 ```
 
-### Usuaris per defecte (seeder)
-
-| Rol | Email | Contrasenya |
-|-----|-------|-------------|
-| Admin | `admin@tunely.es` | `password` |
-| Client | `client@tunely.es` | `password` |
-
-[CAPTURA: instalacio_completada.png]
-
 ---
 
-**Fi de la documentació tècnica**
+**Fin de la documentación técnica**

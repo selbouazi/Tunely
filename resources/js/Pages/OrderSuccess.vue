@@ -1,11 +1,25 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Head, Link } from '@inertiajs/vue3';
-import { onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 
 const props = defineProps({
     order: Object,
 });
+
+const ratingDismissed = ref(false);
+
+const skipRating = () => {
+    fetch(route('api.pending-comments.skip', props.order.id), { method: 'POST' })
+        .then(() => {
+            ratingDismissed.value = true;
+        })
+        .catch(() => {});
+};
+
+const dismissRating = () => {
+    ratingDismissed.value = true;
+};
 
 onMounted(() => {
     localStorage.removeItem('tunely_cart');
@@ -68,6 +82,21 @@ onMounted(() => {
                     </div>
                     <div class="text-sm text-[#1a1a1a]/70">
                         <p>Estado: <span class="text-yellow-600 font-medium">Pendiente</span></p>
+                    </div>
+                </div>
+
+                <div v-if="!ratingDismissed && $page.props.auth.user?.role !== 'admin'" class="mt-6 bg-[#FFC81E]/20 border border-[#FFC81E] rounded-lg p-4">
+                    <h3 class="font-bold text-[#1a1a1a] mb-2">¡Valora tus productos!</h3>
+                    <p class="text-sm text-[#1a1a1a]/70 mb-4">Tu opinión ayuda a otros músicos a encontrar el instrumento perfecto.</p>
+                    <div class="flex flex-wrap gap-3 justify-center">
+                        <Link v-for="item in order.items" :key="item.id" :href="'/catalogo/' + item.instrument_id"
+                            class="bg-[#E87F24] text-white px-4 py-2 rounded text-sm font-bold hover:bg-[#FFC81E]">
+                            Valorar {{ item.instrument.marca }} {{ item.instrument.modelo }}
+                        </Link>
+                    </div>
+                    <div class="flex gap-3 justify-center mt-3">
+                        <button @click="skipRating" class="text-sm text-[#1a1a1a]/60 hover:text-[#E87F24] underline">No valorar</button>
+                        <button @click="dismissRating" class="text-sm text-[#1a1a1a]/60 hover:text-[#1a1a1a] underline">Ahora no</button>
                     </div>
                 </div>
 

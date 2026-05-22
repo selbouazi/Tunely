@@ -13,6 +13,14 @@ const form = useForm({
     estado: '',
 });
 
+const deleteForm = useForm({});
+
+const deleteOrder = () => {
+    if (confirm(`¿Eliminar el pedido #${props.order.id} definitivamente? Esta acción no se puede deshacer.`)) {
+        deleteForm.delete(route('admin.pedidos.destroy', props.order.id));
+    }
+};
+
 const changeStatus = () => {
     if (!selectedStatus.value) return;
     if (!confirm(`¿Cambiar el estado del pedido #${props.order.id} a "${selectedStatus.value}"?`)) return;
@@ -66,6 +74,11 @@ const statusStyles = {
                         </button>
                     </div>
                     <p v-if="form.errors.estado" class="text-red-600 text-xs mt-2">{{ form.errors.estado }}</p>
+                    <div class="mt-6 pt-4 border-t">
+                        <button @click="deleteOrder" class="text-red-600 hover:text-red-800 text-sm font-medium">
+                            Eliminar pedido #{{ order.id }}
+                        </button>
+                    </div>
                 </div>
             </div>
 

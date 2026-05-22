@@ -1,0 +1,7 @@
+{
+  "name": "ionospractica",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "vue-vite"
+}

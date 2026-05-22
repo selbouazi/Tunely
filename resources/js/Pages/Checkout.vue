@@ -10,7 +10,7 @@ const props = defineProps({
 });
 
 const cart = ref([]);
-const defaultImage = 'https://images.unsplash.com/photo-1510915361894-db8b64506d60?w=500';
+const defaultImage = '/img/carrusel/1.webp';
 
 const billingSame = ref(true);
 

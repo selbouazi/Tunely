@@ -19,7 +19,7 @@ const defaultFilters = () => ({
 const filters = ref(defaultFilters());
 const appliedFilters = ref(defaultFilters());
 
-const defaultImage = 'https://images.unsplash.com/photo-1510915361894-db8b64506d60?w=500';
+const defaultImage = '/img/carrusel/1.webp';
 
 const filteredInstruments = computed(() => {
     let result = props.instruments;

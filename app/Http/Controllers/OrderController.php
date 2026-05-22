@@ -10,6 +10,15 @@ use Inertia\Response;
 
 class OrderController extends Controller
 {
+    public function destroy(Order $order): RedirectResponse
+    {
+        $order->items()->delete();
+        $order->pendingComments()->delete();
+        $order->delete();
+
+        return redirect()->route('admin.pedidos.index')
+            ->with('success', "Pedido #{$order->id} eliminado correctamente.");
+    }
     private array $transitions = [
         'pendiente' => ['pagado', 'cancelado'],
         'pagado' => ['enviado', 'cancelado'],

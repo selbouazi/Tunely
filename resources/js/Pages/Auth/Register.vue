@@ -30,6 +30,35 @@ const form = useForm({
 });
 
 const focusedField = ref(null);
+const touchedFields = ref({});
+const fechaDisplay = ref('');
+
+const onFechaInput = (e) => {
+    const raw = e.target.value;
+    const digits = raw.replace(/\D/g, '').slice(0, 8);
+    let formatted = '';
+    if (digits.length > 0) formatted = digits.slice(0, 2);
+    if (digits.length > 2) formatted += '/' + digits.slice(2, 4);
+    if (digits.length > 4) formatted += '/' + digits.slice(4, 8);
+    fechaDisplay.value = formatted;
+    if (digits.length === 8) {
+        form.fecha_nacimiento = `${digits.slice(4, 8)}-${digits.slice(2, 4)}-${digits.slice(0, 2)}`;
+    } else {
+        form.fecha_nacimiento = '';
+    }
+};
+
+const markTouched = (field) => {
+    touchedFields.value[field] = true;
+};
+
+const fieldClass = (field, hasValue) => {
+    const classes = [];
+    if (focusedField.value === field) classes.push('ring-2 ring-[#E87F24]');
+    if (form.errors[field]) classes.push('border-red-500 ring-1 ring-red-500');
+    else if (touchedFields.value[field] && hasValue) classes.push('border-green-500');
+    return classes.join(' ');
+};
 
 const passwordStrength = computed(() => {
     const p = form.password;
@@ -86,12 +115,12 @@ const submit = () => {
                         id="nombre"
                         type="text"
                         class="mt-1 block w-full transition-colors"
-                        :class="focusedField === 'nombre' ? 'ring-2 ring-[#E87F24]' : ''"
+                        :class="fieldClass('nombre', form.nombre)"
                         v-model="form.nombre"
                         required
                         autofocus
                         @focus="focusedField = 'nombre'"
-                        @blur="focusedField = null"
+                        @blur="focusedField = null; markTouched('nombre')"
                     />
                     <InputError class="mt-2" :message="form.errors.nombre" />
                 </div>
@@ -102,10 +131,10 @@ const submit = () => {
                         id="apellido1"
                         type="text"
                         class="mt-1 block w-full bg-[#FEFDDF]"
-                        :class="focusedField === 'apellido1' ? 'ring-2 ring-[#E87F24]' : ''"
+                        :class="fieldClass('apellido1', form.apellido1)"
                         v-model="form.apellido1"
                         @focus="focusedField = 'apellido1'"
-                        @blur="focusedField = null"
+                        @blur="focusedField = null; markTouched('apellido1')"
                     />
                 </div>
 
@@ -115,24 +144,26 @@ const submit = () => {
                         id="apellido2"
                         type="text"
                         class="mt-1 block w-full bg-[#FEFDDF]"
-                        :class="focusedField === 'apellido2' ? 'ring-2 ring-[#E87F24]' : ''"
+                        :class="fieldClass('apellido2', form.apellido2)"
                         v-model="form.apellido2"
                         @focus="focusedField = 'apellido2'"
-                        @blur="focusedField = null"
+                        @blur="focusedField = null; markTouched('apellido2')"
                     />
                 </div>
 
                 <div>
                     <InputLabel for="fecha_nacimiento" value="Fecha de nacimiento *" />
-                    <TextInput
+                    <input
                         id="fecha_nacimiento"
-                        type="date"
-                        class="mt-1 block w-full bg-[#FEFDDF]"
-                        :class="focusedField === 'fecha_nacimiento' ? 'ring-2 ring-[#E87F24]' : ''"
-                        v-model="form.fecha_nacimiento"
+                        type="text"
+                        placeholder="DD/MM/AAAA"
+                        class="mt-1 block w-full rounded-md border-[#73A5CA] shadow-sm focus:border-[#E87F24] focus:ring-[#E87F24] bg-[#FEFDDF]"
+                        :class="fieldClass('fecha_nacimiento', form.fecha_nacimiento)"
+                        :value="fechaDisplay"
+                        @input="onFechaInput"
                         required
                         @focus="focusedField = 'fecha_nacimiento'"
-                        @blur="focusedField = null"
+                        @blur="focusedField = null; markTouched('fecha_nacimiento')"
                     />
                     <InputError class="mt-2" :message="form.errors.fecha_nacimiento" />
                 </div>
@@ -143,12 +174,12 @@ const submit = () => {
                         id="telefono"
                         type="tel"
                         class="mt-1 block w-full bg-[#FEFDDF]"
-                        :class="focusedField === 'telefono' ? 'ring-2 ring-[#E87F24]' : ''"
+                        :class="fieldClass('telefono', form.telefono)"
                         v-model="form.telefono"
                         placeholder="+34 612 345 678"
                         required
                         @focus="focusedField = 'telefono'"
-                        @blur="focusedField = null"
+                        @blur="focusedField = null; markTouched('telefono')"
                     />
                     <InputError class="mt-2" :message="form.errors.telefono" />
                 </div>
@@ -159,64 +190,64 @@ const submit = () => {
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="md:col-span-2">
                         <InputLabel for="direccion" value="Dirección *" />
-                        <TextInput
-                            id="direccion"
-                            type="text"
-                            class="mt-1 block w-full bg-[#FEFDDF]"
-                            :class="focusedField === 'direccion' ? 'ring-2 ring-[#E87F24]' : ''"
-                            v-model="form.direccion"
-                            placeholder="Calle, número, piso..."
-                            required
-                            @focus="focusedField = 'direccion'"
-                            @blur="focusedField = null"
-                        />
+                    <TextInput
+                        id="direccion"
+                        type="text"
+                        class="mt-1 block w-full bg-[#FEFDDF]"
+                        :class="fieldClass('direccion', form.direccion)"
+                        v-model="form.direccion"
+                        placeholder="Calle, número, piso..."
+                        required
+                        @focus="focusedField = 'direccion'"
+                        @blur="focusedField = null; markTouched('direccion')"
+                    />
                         <InputError class="mt-2" :message="form.errors.direccion" />
                     </div>
 
                     <div>
                         <InputLabel for="ciudad" value="Ciudad *" />
-                        <TextInput
-                            id="ciudad"
-                            type="text"
-                            class="mt-1 block w-full bg-[#FEFDDF]"
-                            :class="focusedField === 'ciudad' ? 'ring-2 ring-[#E87F24]' : ''"
-                            v-model="form.ciudad"
-                            required
-                            @focus="focusedField = 'ciudad'"
-                            @blur="focusedField = null"
-                        />
+                    <TextInput
+                        id="ciudad"
+                        type="text"
+                        class="mt-1 block w-full bg-[#FEFDDF]"
+                        :class="fieldClass('ciudad', form.ciudad)"
+                        v-model="form.ciudad"
+                        required
+                        @focus="focusedField = 'ciudad'"
+                        @blur="focusedField = null; markTouched('ciudad')"
+                    />
                         <InputError class="mt-2" :message="form.errors.ciudad" />
                     </div>
 
                     <div>
                         <InputLabel for="provincia" value="Provincia *" />
-                        <TextInput
-                            id="provincia"
-                            type="text"
-                            class="mt-1 block w-full bg-[#FEFDDF]"
-                            :class="focusedField === 'provincia' ? 'ring-2 ring-[#E87F24]' : ''"
-                            v-model="form.provincia"
-                            required
-                            @focus="focusedField = 'provincia'"
-                            @blur="focusedField = null"
-                        />
+                    <TextInput
+                        id="provincia"
+                        type="text"
+                        class="mt-1 block w-full bg-[#FEFDDF]"
+                        :class="fieldClass('provincia', form.provincia)"
+                        v-model="form.provincia"
+                        required
+                        @focus="focusedField = 'provincia'"
+                        @blur="focusedField = null; markTouched('provincia')"
+                    />
                         <InputError class="mt-2" :message="form.errors.provincia" />
                     </div>
 
                     <div>
                         <InputLabel for="codigo_postal" value="Código postal *" />
-                        <TextInput
-                            id="codigo_postal"
-                            type="text"
-                            class="mt-1 block w-full bg-[#FEFDDF]"
-                            :class="focusedField === 'codigo_postal' ? 'ring-2 ring-[#E87F24]' : ''"
-                            v-model="form.codigo_postal"
-                            maxlength="5"
-                            placeholder="12345"
-                            required
-                            @focus="focusedField = 'codigo_postal'"
-                            @blur="focusedField = null"
-                        />
+                    <TextInput
+                        id="codigo_postal"
+                        type="text"
+                        class="mt-1 block w-full bg-[#FEFDDF]"
+                        :class="fieldClass('codigo_postal', form.codigo_postal && form.codigo_postal.length === 5)"
+                        v-model="form.codigo_postal"
+                        maxlength="5"
+                        placeholder="12345"
+                        required
+                        @focus="focusedField = 'codigo_postal'"
+                        @blur="focusedField = null; markTouched('codigo_postal')"
+                    />
                         <InputError class="mt-2" :message="form.errors.codigo_postal" />
                     </div>
                 </div>
@@ -228,7 +259,7 @@ const submit = () => {
                         id="mismo_direccion_facturacion"
                         type="checkbox"
                         v-model="form.mismo_direccion_facturacion"
-                        class="mr-2"
+                        class="mr-2 rounded border-gray-300 text-[#E87F24] focus:ring-[#E87F24]"
                     />
                     <label for="mismo_direccion_facturacion" class="text-[#1a1a1a] text-sm">
                         La dirección de facturación es la misma que la de envío
@@ -323,12 +354,12 @@ const submit = () => {
                         id="email"
                         type="email"
                         class="mt-1 block w-full bg-[#FEFDDF]"
-                        :class="focusedField === 'email' ? 'ring-2 ring-[#E87F24]' : ''"
+                        :class="fieldClass('email', form.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))"
                         v-model="form.email"
                         required
                         autocomplete="username"
                         @focus="focusedField = 'email'"
-                        @blur="focusedField = null"
+                        @blur="focusedField = null; markTouched('email')"
                     />
                     <InputError class="mt-2" :message="form.errors.email" />
                 </div>
@@ -339,12 +370,12 @@ const submit = () => {
                         id="password"
                         type="password"
                         class="mt-1 block w-full bg-[#FEFDDF]"
-                        :class="focusedField === 'password' ? 'ring-2 ring-[#E87F24]' : ''"
+                        :class="fieldClass('password', form.password && passwordStrength >= 2)"
                         v-model="form.password"
                         required
                         autocomplete="new-password"
                         @focus="focusedField = 'password'"
-                        @blur="focusedField = null"
+                        @blur="focusedField = null; markTouched('password')"
                     />
                     <div v-if="form.password" class="mt-2">
                         <label class="text-xs text-[#1a1a1a]/70">Fortaleza:</label>
@@ -362,12 +393,12 @@ const submit = () => {
                         id="password_confirmation"
                         type="password"
                         class="mt-1 block w-full bg-[#FEFDDF]"
-                        :class="focusedField === 'password_confirmation' ? 'ring-2 ring-[#E87F24]' : ''"
+                        :class="fieldClass('password_confirmation', form.password_confirmation && form.password_confirmation === form.password)"
                         v-model="form.password_confirmation"
                         required
                         autocomplete="new-password"
                         @focus="focusedField = 'password_confirmation'"
-                        @blur="focusedField = null"
+                        @blur="focusedField = null; markTouched('password_confirmation')"
                     />
                     <InputError class="mt-2" :message="form.errors.password_confirmation" />
                 </div>
