@@ -104,14 +104,14 @@ const getByType = (type) => {
                 <h2 class="text-xl font-bold mb-6 text-[#1a1a1a]">Cómo llegar</h2>
                 <div class="w-full aspect-video max-w-3xl rounded shadow overflow-hidden">
                     <iframe
-                        src="https://www.openstreetmap.org/export/embed.html?bbox=2.1600%2C41.3800%2C2.1800%2C41.3900&amp;layer=mapnik&amp;marker=41.3850%2C2.1700"
+                        src="https://www.openstreetmap.org/export/embed.html?bbox=2.1238%2C41.3536%2C2.1438%2C41.3736&amp;layer=mapnik&amp;marker=41.3636%2C2.1338"
                         width="100%"
                         height="100%"
                         style="border:0;"
                         allowfullscreen
                         loading="lazy"
                         referrerpolicy="no-referrer-when-downgrade"
-                        title="Ubicación de Tunely"
+                        title="Ubicació de Tunely"
                     ></iframe>
                 </div>
             </div>
