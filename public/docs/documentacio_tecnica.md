@@ -22,6 +22,9 @@
 11. [Gráfico Canvas](#11-gráfico-canvas)
 12. [Seeders](#12-seeders)
 13. [Manual de instalación](#13-manual-de-instalación)
+14. [API REST (Pràctica 3)](#14-api-rest-pràctica-3)
+15. [App Ionic (Pràctica 3)](#15-app-ionic-pràctica-3)
+16. [Tests d'errors (Pràctica 3)](#16-tests-derrors-pràctica-3)
 
 ---
 
@@ -38,6 +41,8 @@
 | Autenticación | Laravel Breeze (Inertia + Vue) | ^2.x |
 | Build | Vite | ^7.3 |
 | Rutas JS | Ziggy | ^2.0 |
+| API REST | Laravel (routes/api.php) | Pràctica 3 DWES |
+| App mòbil | Ionic + Vue 3 (Tabs) | Pràctica 3 DWES |
 
 ### Flujo de datos Inertia
 
@@ -991,6 +996,331 @@ php artisan storage:link
 php artisan serve
 # http://localhost:8000
 ```
+
+---
+
+## 14. API REST (Pràctica 3)
+
+### 14.1 Objectiu
+
+Crear una API REST amb Laravel per ser consumida des d'una aplicació Ionic. L'API exposa endpoints per a productes (instruments), categories i subcategories.
+
+### 14.2 Controladors API
+
+**Ubicació:** `app/Http/Controllers/API/`
+
+**ProductController.php:**
+
+```php
+class ProductController extends Controller
+{
+    public function index(): JsonResponse
+    {
+        $products = Instrument::with('subcategory')
+            ->orderBy('marca')->orderBy('modelo')->get()
+            ->map(fn($i) => $this->formatProduct($i));
+        return response()->json($products);
+    }
+
+    public function bySubcategory(int $subcategoryId): JsonResponse
+    {
+        $products = Instrument::with('subcategory')
+            ->where('subcategory_id', $subcategoryId)
+            ->orderBy('marca')->orderBy('modelo')->get()
+            ->map(fn($i) => $this->formatProduct($i));
+        return response()->json($products);
+    }
+
+    public function show(int $id): JsonResponse
+    {
+        $instrument = Instrument::with('category', 'subcategory')->findOrFail($id);
+        return response()->json($this->formatProduct($instrument));
+    }
+
+    private function formatProduct(Instrument $instrument): array
+    {
+        return [
+            'id' => $instrument->id,
+            'name' => $instrument->marca . ' ' . $instrument->modelo,
+            'description' => $instrument->descripcion,
+            'price' => number_format($instrument->precio, 2, '.', ''),
+            'stock' => $instrument->stock,
+            'image' => $instrument->imagen ? asset($instrument->imagen) : null,
+            'subcategory_id' => $instrument->subcategory_id,
+            'category_id' => $instrument->category_id,
+            'created_at' => $instrument->created_at,
+            'updated_at' => $instrument->updated_at,
+        ];
+    }
+}
+```
+
+**CategoryController.php:**
+
+```php
+class CategoryController extends Controller
+{
+    public function index(): JsonResponse
+    {
+        $categories = Category::with('subcategories')
+            ->orderBy('nombre')->get()
+            ->map(fn($c) => [
+                'id' => $c->id,
+                'name' => $c->nombre,
+                'slug' => $c->slug,
+                'subcategories' => $c->subcategories->map(fn($s) => [
+                    'id' => $s->id,
+                    'name' => $s->nombre,
+                    'slug' => $s->slug,
+                ]),
+            ]);
+        return response()->json($categories);
+    }
+}
+```
+
+**Decisió tècnica:** El mètode `formatProduct()` transforma les dades del model `Instrument` al format esperat per l'app Ionic. El camp `name` es construeix concatenant `marca + modelo`. El camp `image` utilitza `asset()` per generar la URL completa del servidor Laravel, evitant errors de rutes relatives des de l'app Ionic.
+
+### 14.3 Rutes API
+
+**Fitxer:** `routes/api.php`
+
+```php
+Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products/subcategory/{subcategoryId}', [ProductController::class, 'bySubcategory']);
+Route::get('/products/{id}', [ProductController::class, 'show']);
+Route::get('/categories', [CategoryController::class, 'index']);
+```
+
+**Exemple de resposta JSON (`GET /api/products`):**
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Fender Stratocaster Player",
+    "description": "Guitarra elèctrica Stratocaster de gama media...",
+    "price": "899.00",
+    "stock": 24,
+    "image": "http://127.0.0.1:8000/img/prod/fender-stratocaster-player.webp",
+    "subcategory_id": 1,
+    "category_id": 1
+  }
+]
+```
+
+### 14.4 Configuració CORS
+
+**Fitxer:** `config/cors.php`
+
+```php
+'allowed_origins' => [
+    env('FRONTEND_URL', 'http://localhost:3000'),
+    'http://localhost:8100',
+],
+```
+
+**Fitxer:** `bootstrap/app.php`
+
+S'ha afegit el middleware `HandleCors` al grup de middleware `api` i s'ha habilitat el routing API:
+
+```php
+->withRouting(
+    web: __DIR__.'/../routes/web.php',
+    api: __DIR__.'/../routes/api.php',
+    commands: __DIR__.'/../routes/console.php',
+    health: '/up',
+)
+->withMiddleware(function (Middleware $middleware): void {
+    $middleware->api(prepend: [
+        \Illuminate\Http\Middleware\HandleCors::class,
+    ]);
+    $middleware->statefulApi();
+})
+```
+
+**Decisió tècnica:** El CORS es configura explícitament per permetre sol·licituds des de `localhost:8100` (domini de l'app Ionic en desenvolupament). El middleware `HandleCors` s'afegeix al grup `api` per assegurar que totes les respostes API incloguin els headers CORS necessaris.
+
+---
+
+## 15. App Ionic (Pràctica 3)
+
+### 15.1 Objectiu
+
+Crear una aplicació mòbil amb Ionic + Vue 3 (plantilla Tabs) que consumisca l'API REST de Laravel per mostrar categories, subcategories i productes.
+
+### 15.2 Creació del projecte
+
+```bash
+ionic start ionospractica tabs --type=vue --no-git --no-link
+```
+
+**Plantilla escollida:** `tabs` — proporciona navegació amb pestanyes inferiors, ideal per a l'estructura demanada (Categories, Productes, Info).
+
+### 15.3 Estructura de fitxers
+
+```
+ionospractica/src/
+├── components/
+│   ├── ExploreContainer.vue      # Component per defecte d'Ionic
+│   └── ProductList.vue           # Component reutilitzable de llistat de productes
+├── router/
+│   └── index.ts                  # Configuració de rutes
+├── views/
+│   ├── TabCategories.vue         # Pestanya 1: Categories i subcategories
+│   ├── TabProducts.vue           # Pestanya 2: Llistat de productes
+│   ├── Tab3Page.vue              # Pestanya 3: Info placeholder
+│   ├── ProductDetails.vue        # Fitxa de producte (fora dels tabs)
+│   ├── ProductsBySubcategory.vue # Productes filtrats per subcategoria
+│   └── TabsPage.vue              # Layout principal amb pestanyes
+├── App.vue
+├── main.ts
+└── theme/variables.css
+```
+
+### 15.4 Router
+
+**Fitxer:** `src/router/index.ts`
+
+```typescript
+const routes: Array<RouteRecordRaw> = [
+  { path: '/', redirect: '/tabs/tab1' },
+  {
+    path: '/tabs/',
+    component: TabsPage,
+    children: [
+      { path: '', redirect: '/tabs/tab1' },
+      { path: 'tab1', component: () => import('@/views/TabCategories.vue') },
+      { path: 'tab2', component: () => import('@/views/TabProducts.vue') },
+      { path: 'tab3', component: () => import('@/views/Tab3Page.vue') },
+    ],
+  },
+  { path: '/products/:id', component: () => import('@/views/ProductDetails.vue') },
+  { path: '/products/subcategory/:id', component: () => import('@/views/ProductsBySubcategory.vue') },
+];
+```
+
+**Decisió tècnica:** Les vistes de detall (`ProductDetails`, `ProductsBySubcategory`) es defineixen com a rutes independents (fora dels tabs) per poder tenir el seu propi header amb botó "Tornar" i títol dinàmic, sense interferir amb la navegació per pestanyes.
+
+### 15.5 Component reutilitzable ProductList
+
+**Fitxer:** `src/components/ProductList.vue`
+
+```vue
+<template>
+  <ion-list v-if="products.length > 0">
+    <ion-item v-for="product in products" :key="product.id"
+              :router-link="`/products/${product.id}`" detail>
+      <ion-thumbnail slot="start">
+        <img :src="product.image" :alt="product.name" />
+      </ion-thumbnail>
+      <ion-label>
+        <h2>{{ product.name }}</h2>
+        <p>{{ product.price }} €</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+  <div v-else class="ion-text-center ion-padding">
+    <p>No hi ha productes disponibles.</p>
+  </div>
+</template>
+
+<script setup lang="ts">
+defineProps<{ products: Product[] }>();
+</script>
+```
+
+**Decisió tècnica:** Es defineix com a component `reutilitzable` que accepta un array de productes via `props`. S'utilitza tant a `TabProducts.vue` (tots els productes) com a `ProductsBySubcategory.vue` (productes filtrats), evitant duplicar codi de renderització.
+
+### 15.6 Consum de l'API des d'Ionic
+
+Totes les vistes fan fetch a l'API de Laravel usant l'API nativa `fetch()` de JavaScript dins del hook `onMounted`:
+
+```typescript
+onMounted(async () => {
+  const res = await fetch('http://127.0.0.1:8000/api/products');
+  products.value = await res.json();
+});
+```
+
+**Decisió tècnica:** S'usa `fetch()` natiu en lloc d'Axios per simplicitat (no cal instal·lar dependències addicionals). Les peticions són GET sense autenticació (l'API és pública per a esta pràctica).
+
+### 15.7 Navegació amb títols dinàmics i botó "Tornar"
+
+```vue
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button default-href="/tabs/tab2" text="Tornar" />
+    </ion-buttons>
+    <ion-title>{{ product?.name || 'Producte' }}</ion-title>
+  </ion-toolbar>
+</ion-header>
+```
+
+**Funcionament:** El component `<ion-back-button>` d'Ionic mostra automàticament una fletxa enrere. Quan es navega des d'una pestanya, torna a eixa pestanya (`default-href`). El títol es canvia dinàmicament des del `<script setup>`.
+
+### 15.8 Icones de pestanyes
+
+```vue
+<ion-tab-button tab="tab1" href="/tabs/tab1">
+  <ion-icon :icon="cubeOutline" />
+  <ion-label>Categories</ion-label>
+</ion-tab-button>
+<ion-tab-button tab="tab2" href="/tabs/tab2">
+  <ion-icon :icon="musicalNotesOutline" />
+  <ion-label>Productes</ion-label>
+</ion-tab-button>
+<ion-tab-button tab="tab3" href="/tabs/tab3">
+  <ion-icon :icon="informationCircleOutline" />
+  <ion-label>Info</ion-label>
+</ion-tab-button>
+```
+
+Icones d'Ionicons utilitzades: `cube-outline` (Categories), `musical-notes-outline` (Productes), `information-circle-outline` (Info).
+
+---
+
+## 16. Tests d'errors (Pràctica 3)
+
+### 16.1 Proves funcionals de l'API
+
+| # | Prova | Resultat esperat | Resultat obtingut | Captura |
+|---|-------|-------------------|-------------------|---------|
+| 1 | `GET /api/products` | Retorna JSON amb tots els productes | ✅ Correcte (30 productes) | ![Test API products](posar_aqui_test_api_products.png) |
+| 2 | `GET /api/products/1` | Retorna producte amb id=1 | ✅ Correcte | ![Test API product detail](posar_aqui_test_api_product_detail.png) |
+| 3 | `GET /api/products/subcategory/1` | Retorna 4 productes de subcategoria 1 | ✅ Correcte | ![Test API subcategory](posar_aqui_test_api_subcategory.png) |
+| 4 | `GET /api/products/999` | Error 404 | ✅ Correcte (Not Found) | ![Test API 404](posar_aqui_test_api_404.png) |
+| 5 | `GET /api/categories` | Retorna 5 categories amb subcategories | ✅ Correcte | ![Test API categories](posar_aqui_test_api_categories.png) |
+| 6 | `OPTIONS /api/products` | Headers CORS correctes | ✅ Correcte (Vary: Origin) | ![Test CORS](posar_aqui_test_cors.png) |
+
+### 16.2 Proves de l'app Ionic
+
+| # | Prova | Resultat esperat | Resultat obtingut | Captura |
+|---|-------|-------------------|-------------------|---------|
+| 1 | Obrir app → Tab Categories | Es carreguen categories i subcategories | ✅ Correcte | ![Test Tab1](posar_aqui_test_tab1.png) |
+| 2 | Clic a subcategoria | Navega a productes filtrats | ✅ Correcte | ![Test subcategory nav](posar_aqui_test_subcat_nav.png) |
+| 3 | Tab Products → carregar productes | Llistat complet ordenat A-Z | ✅ Correcte | ![Test Tab2](posar_aqui_test_tab2.png) |
+| 4 | Clic a producte | Navega a ProductDetails amb dades | ✅ Correcte | ![Test product detail](posar_aqui_test_detail.png) |
+| 5 | Botó "Tornar" a ProductDetails | Torna al llistat de productes | ✅ Correcte | ![Test back button](posar_aqui_test_back.png) |
+| 6 | Tab Info | Es mostra informació estàtica | ✅ Correcte | ![Test Tab3](posar_aqui_test_tab3.png) |
+| 7 | Títol dinàmic a ProductDetails | Mostra nom del producte | ✅ Correcte | ![Test title](posar_aqui_test_title.png) |
+
+### 16.3 Proves de connectivitat i CORS
+
+| # | Prova | Resultat | Captura |
+|---|-------|----------|---------|
+| 1 | API Laravel en localhost:8000 | ✅ Respon correctament | ![Test server running](posar_aqui_test_server.png) |
+| 2 | App Ionic en localhost:8100 | ✅ Respon correctament | ![Test ionic serve](posar_aqui_test_ionic.png) |
+| 3 | Petició CORS des d'Ionic a Laravel | ✅ Headers CORS correctes | ![Test CORS request](posar_aqui_test_cors_request.png) |
+
+### 16.4 Errors detectats i correccions
+
+| Error | Causa | Solució |
+|-------|-------|---------|
+| Imatges no es carregaven a Ionic | URL relativa `/img/prod/...` des de localhost:8100 | Afegir `asset()` al controlador API per generar URL completa |
+| `ion-img` mostrava la imatge com a fons de pàgina | Component `ion-img` no compatible amb `object-fit` | Substituir per `<img>` natiu amb wrapper centrat |
+| CORS bloquejava peticions des d'Ionic | `allowed_origins` no incloïa localhost:8100 | Afegir `http://localhost:8100` a `config/cors.php` |
 
 ---
 

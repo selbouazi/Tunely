@@ -298,4 +298,101 @@ El formulario de registro cumple los siguientes requisitos:
 
 ---
 
+## 6. App Mòbil Ionic (consum d'API REST)
+
+La pràctica 3 del mòdul DWES afegeix una aplicació mòbil construïda amb Ionic + Vue 3 que consumeix l'API REST de Laravel per mostrar categories, subcategories i productes.
+
+### 6.1 Arquitectura de comunicació
+
+L'app Ionic es connecta a l'API de Laravel via peticions HTTP fetch() a `http://127.0.0.1:8000/api/*`. Les dades es reben en format JSON i es renderitzen amb components d'Ionic.
+
+```
+App Ionic (localhost:8100) ──fetch()──> API Laravel (localhost:8000/api/)
+                                             │
+                                          Eloquent ORM
+                                             │
+                                          SQLite/MySQL
+```
+
+### 6.2 Pestanya 1 — Categories
+
+![Captura 1: Categories i subcategories agrupades](posar_aqui_captura_tab_categories.png)
+
+- **Endpoint consumit:** `GET /api/categories`
+- Es mostren totes les categories (Cuerda, Viento, Percusión, Teclado, Electrónico) amb les seves subcategories agrupades sota cada una.
+- Cada subcategoria apareix com un element clicable dins del seu grup.
+- **En fer clic a una subcategoria** → navega a la vista `ProductsBySubcategory`, que carrega els productes filtrats per aquesta subcategoria.
+- La navegació es fa mitjançant `router-link` d'Ionic, que permet el botó "Tornar" al header.
+
+### 6.3 Pestanya 2 — Productes
+
+![Captura 2: Llistat de productes ordenats A-Z](posar_aqui_captura_tab_products.png)
+
+- **Endpoint consumit:** `GET /api/products`
+- Es mostren TOTS els productes ordenats alfabèticament (A-Z) per nom.
+- Cada producte mostra: thumbnail (miniatura), nom complet (marca + modelo), preu.
+- Utilitza el component reutilitzable `ProductList.vue`.
+- **En fer clic a un producte** → navega a la vista `ProductDetails` amb la fitxa completa del producte.
+
+### 6.4 Fitxa de producte (ProductDetails)
+
+![Captura 3: Fitxa de producte amb imatge, preu i detalls](posar_aqui_captura_product_detail.png)
+
+- **Endpoint consumit:** `GET /api/products/{id}`
+- Es mostra la informació completa del producte seleccionat:
+  - Imatge del producte (carregada des del servidor Laravel via `asset()`)
+  - Nom complet (marca + modelo)
+  - Preu en euros (format amb 2 decimals)
+  - Stock disponible
+  - Descripció del producte
+- **Títol dinàmic:** El nom del producte apareix com a títol de la pàgina.
+- **Botó "Tornar":** Al header, permet tornar al llistat de productes.
+
+### 6.5 Productes per subcategoria (ProductsBySubcategory)
+
+![Captura 4: Productes filtrats per subcategoria](posar_aqui_captura_subcategory_products.png)
+
+- **Endpoint consumit:** `GET /api/products/subcategory/{subcategoryId}`
+- Es mostren només els productes pertanyents a la subcategoria seleccionada.
+- Els productes s'ordenen alfabèticament.
+- **Títol dinàmic:** El nom de la subcategoria es mostra com a títol (obtingut de l'endpoint de categories).
+- **Botó "Tornar":** Permet tornar a la llista de categories.
+
+### 6.6 Pestanya 3 — Info
+
+![Captura 5: Pestanya informativa](posar_aqui_captura_tab_info.png)
+
+- Mostra informació estàtica del projecte:
+  - Títol de la pràctica
+  - Centre educatiu (Institut Camí de Mar)
+  - Cicle (DAW)
+- Sense funcionalitat interactiva.
+
+### 6.7 Navegació i títols dinàmics
+
+- Quan es navega a una vista de detall (producte o subcategoria), el títol del header canvia dinàmicament per reflectir el contingut actual.
+- Totes les vistes de detall disposen d'un botó "Tornar" (`ion-back-button`) a la part superior esquerra.
+- Les pestanyes inferiors utilitzen icones representatives:
+  - **Categories:** `cube-outline`
+  - **Productes:** `musical-notes-outline`
+  - **Info:** `information-circle-outline`
+
+### 6.8 Flux de navegació complet
+
+```
+Tab Categories ──clic subcategoria──> ProductsBySubcategory ──clic producte──> ProductDetails
+                                                                                    │
+                                                                              [Tornar] → Tab Products
+                                                                                    │
+                                                                              [Tornar] → Tab Categories
+
+Tab Products ──clic producte──> ProductDetails
+                                    │
+                              [Tornar] → Tab Products
+
+Tab Info → Sense navegació addicional
+```
+
+---
+
 **Fin de la documentación funcional**
